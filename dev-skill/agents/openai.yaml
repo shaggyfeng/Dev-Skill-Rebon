@@ -1,0 +1,4 @@
+interface:
+  display_name: "Development Workflow"
+  short_description: "Engineering workflow with visible Rebon runs"
+  default_prompt: "Use $dev-skill to route this engineering task, preserve project authority, and show every delegated role in a visible Workflow run when Rebon uses an online provider."
