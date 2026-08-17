@@ -33,7 +33,7 @@ Use a short defined term consistently when it compresses a recurring behavior, s
 - Keep each meaning in one source of truth; point to it instead of duplicating it.
 - Treat the environment (`--help`, scripts, config, directory layout, schemas, and tests) as authoritative for facts it can expose. Document unwritten conventions, rationale, and failure modes rather than caching command output that can go stale.
 - Remove stale sediment and no-op instructions sentence by sentence.
-- Preserve project-specific authority: Python state, append-only records, accepted artifacts, human gates, and deterministic validators outrank a convenient summary.
+- Preserve host-project authority: governed state, append-only records, accepted artifacts, human gates, and deterministic validators outrank a convenient summary.
 
 ## Choosing a representation
 
@@ -66,4 +66,4 @@ Keep ordinary paragraphs, list items, blockquotes, and headings on one physical 
 
 ## Skill mechanics in this repository
 
-User-invoked references are reached only when the human names them; use them to orchestrate a process and honor their gate policy. Model-invoked references may be selected when their description matches, but they still cannot authorize a new normative decision. Apply [ultrawork-orchestration.md](ultrawork-orchestration.md) per the mode table in `dev-skill/SKILL.md` — full in isolated mode, modified in sequential mode, absent in parallel mode. When editing a skill, read the affected reference, update the router, check every relative pointer, and run a pointer/route validation before declaring it complete.
+User-invoked references are reached only when the human names them; use them to orchestrate a process and honor their gate policy. Model-invoked references may be selected when their description matches, but they still cannot authorize a new normative decision. Apply [ultrawork-orchestration.md](ultrawork-orchestration.md) only when the activation decision selects an UltraWork workload; use its full delegated variant when subagents are available and its sequential variant on a local single-model host. Normal native work does not enter that reference. When editing a skill, read the affected reference, update the router, check every relative pointer, and run a pointer/route validation before declaring it complete.

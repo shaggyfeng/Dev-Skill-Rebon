@@ -5,8 +5,10 @@ description: Project compatibility entry point for the development workflow skil
 
 # Development skill entry point
 
-The canonical local adaptation is [dev-skill/SKILL.md](dev-skill/SKILL.md). It
-includes the useful upstream dev-skill 1.2.3 workflows while replacing hosted
-multi-agent assumptions with this project's sequential single-local-LLM rules.
+The canonical adaptation is [dev-skill/SKILL.md](dev-skill/SKILL.md). It
+includes the useful upstream dev-skill 1.2.3 workflows while adapting execution
+to the host and workload: delegated UltraWork when justified, native workflows
+for ordinary frontier work, and sequential role handoffs when only one local
+model is available.
 
 Read that file completely before doing software-engineering work in this project. Follow its routing table and load only the references selected for the current task. The files under `dev-skill/references/` preserve the detailed guidance formerly concatenated into this file.

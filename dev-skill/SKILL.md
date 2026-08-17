@@ -1,6 +1,6 @@
 ---
 name: dev-skill
-description: Guide software-engineering work from intake through design, planning, work, and release across five stages, with three provider modes (isolated, parallel, sequential) sharing one workflow with per-mode instructions. Use when planning or changing this repository, coordinating development, diagnosing failures, writing tests, or reviewing code; the standard work loop ends in a three-axis review (Standards, Spec, Correctness).
+description: Guide software-engineering work from intake through design, planning, work, and release across five stages, with provider-aware native, UltraWork, and sequential workflows. Use when planning or changing this repository, coordinating development, diagnosing failures, writing tests, or reviewing code; the standard work loop ends in a three-axis review (Standards, Spec, Correctness).
 ---
 
 # Development workflow
@@ -9,21 +9,30 @@ Router and operating contract. Read order: mode classification (first operating 
 
 ## Mode activation
 
-Before any task work, classify the development host into exactly one mode. Modes are capability classes, never brands; named hosts are examples.
+Before any task work, classify the development host, provider, and workload into one operating mode. Modes are capability classes, never brands; named hosts are examples. The host/provider classification answers what the agent can do. The workload choice answers whether the extra UltraWork decomposition is worth its overhead.
 
-| Mode                                                         | Short name | Isolated subagents | Context discipline                                                                        | UltraWork                                                     |
-| ------------------------------------------------------------ | ---------- | ------------------ | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| 1 — parallel-isolated (Codex/ChatGPT-class, Claude)          | isolated   | yes                | none beyond hygiene; UltraWork's atomic task sizing is standard practice inside UltraWork | full                                                          |
-| 2 — parallel-bounded (Cheap online plan, Cheap Subscription) | parallel   | yes                | bounded writes + envelopes per subagent card                                              | none — policy: ceremony outweighs value at this level         |
-| 3 — sequential-local (single local llama.cpp, Ollama)        | sequential | no                 | bounded writes + handoff-doc packets between roles                                        | modified: same breakdown and gates, sequential fresh contexts |
+| Internal identifier | Human-facing mode | Short | Capability and default use | UltraWork |
+|---|---|---|---|---|
+| `parallel-isolated` | parallel-cheap | `cheap` | Delegated subagents with high throughput; use for cheap providers with usable subagents or long, unattended frontier runs. | Selected for the workload; full four-stage preflight and Kanban. |
+| `parallel-bounded` | parallel-normal | `normal` | Ordinary frontier or online work with the host's native workflow; this is the default for normal interactive work. | Not required; opt in for a long or otherwise oversized run. |
+| `sequential-local` | sequential-single | `single` | One local model with no usable subagents; run the same DevSkill roles one at a time with bounded handoff packets. | Use the sequential form when the workload needs decomposition; never assume native subagent dispatch exists. |
 
-Classify from trusted host metadata or an explicit human statement; if neither confirms, ask the human before task work — never guess. Re-classify only when the host or provider actually changes.
+Classify from trusted host/provider metadata or an explicit human statement; if neither confirms, ask the human before task work — never guess. Re-classify only when the host, provider, or workload choice actually changes.
 
-UltraWork is DevSkill's own subagent orchestration: atomic breakdown (roadmap → phase → slice → subagent-sized task), four-stage preflight (Reader/Task Breaker → Planner → Deep Reviewer → Plan Applier), card contracts, bounded writes, recovery. It is host-neutral; its rationale is cheap-provider economics — the main agent stays under its ceiling by delegating every atomic task to small-context subagents, enabling long unattended runs. Its only host-native dependency is Rebon's Kanban display rendering. UltraWork is the Work-stage execution strategy, selected per mode by the table above; full contract in [ultrawork-orchestration.md](references/ultrawork-orchestration.md).
+UltraWork is DevSkill's optional workload strategy: atomic breakdown (roadmap → phase → slice → agent-sized task), four-stage preflight (Reader/Task Breaker → Planner → Deep Reviewer → Plan Applier), card contracts, bounded writes, and recovery. It is valuable when provider cost, context limits, unattended duration, or task size justify the ceremony; it is not mandatory for normal frontier work. Rebon Workflow is an optional visual dispatch vehicle when the host supports it and the user selects it; it adds no authority. The full strategy is in [ultrawork-orchestration.md](references/ultrawork-orchestration.md).
 
-Role separation is mode-invariant: sequential mode runs the same roles as isolated mode, one fresh context at a time, handoff-style packets as carrier — roles are never merged into one context.
+Role separation is workflow-invariant: a local single-model host runs the same roles sequentially through bounded handoff packets, while a host with usable subagents may delegate them. A local model never depends on a native subagent workflow that it cannot access.
 
-References MUST NOT restate mode forks; point to this table. Historical per-setup duplicates (subagent vs single-LLM files) were merged under this rule.
+References MUST NOT restate provider or workload forks; point to this table. Historical per-setup duplicates (subagent vs single-model files) were merged under this rule.
+
+### Activation decision
+
+1. Determine `host_kind`, `provider_kind`, subagent availability, and any explicit workload request from trusted metadata; if a field is unknown, ask one focused question before task work.
+2. A local provider with no usable subagents enters `sequential-single`; the main model performs Reader, Planner, Reviewer, Applier, implementation, and verification roles one at a time with handoff packets.
+3. A normal online or frontier provider enters `parallel-normal` by default and uses its native workflow. Do not impose UltraWork merely because subagents exist.
+4. Select `parallel-cheap` and UltraWork when the provider is cheap with usable subagents, the run is long or unattended, or the task is large enough that bounded decomposition materially reduces failure risk.
+5. When the host is Rebon and the user selects the optional Workflow display for a workload already using UltraWork, read [rebon-workflow-visual-display.md](references/rebon-workflow-visual-display.md). Normal Rebon work may remain native and does not require the display.
+6. State the selected human-facing mode and workload strategy, preserve them for the session, and reclassify only when the host, provider, or explicit workload choice changes.
 
 ## Stage detection
 
@@ -96,7 +105,7 @@ flowchart TB
     end
 
     subgraph S3 ["Stage 3 — Work"]
-        UW["UltraWork — execution strategy<br/>per-mode variant"]
+        UW["UltraWork — workload-selected strategy<br/>full or sequential variant"]
         IM["implement + tdd<br/>red → green slice"]
         CR["code-review — three-axis close-out<br/>Standards · Spec · Correctness"]
         AV["hard-code-review<br/>standalone deep hunts,<br/>direct-entry checks"]
@@ -106,7 +115,7 @@ flowchart TB
 
     subgraph S4 ["Stage 4 — Release"]
         WA["writing-for-agents · records"]
-        CO["collection-overview · setup-matt-pocock-skills"]
+        CO["collection-overview · setup-dev-skills"]
         PB["phase-boundaries"]
         HD["handoff"]
     end
@@ -185,7 +194,7 @@ Trigger types: stage-automatic · content-present · user-explicit · never-infe
 | plan ready for machine consumption                                                    | to-spec                            | stage-automatic after Plan                                                                                          | candidate spec; publication human-only                   |
 | plan needs human-verifiable structure                                                 | two-layer-development-planning     | stage-conditional                                                                                                   | paired views; verification is human                      |
 | approved spec exists                                                                  | to-tickets                         | stage-automatic                                                                                                     | atomic tickets                                           |
-| admitted work, isolated or sequential mode                                            | UltraWork strategy                 | mode-bound                                                                                                          | slices and gates only; never publishes                   |
+| admitted work with a cheap/long workload                                              | UltraWork strategy                 | workload-selected                                                                                                   | slices and gates only; never publishes                   |
 | every completed slice                                                                 | code-review (three-axis)           | stage-automatic close-out + "review since X"                                                                        | findings only; never approves; axes never reranked       |
 | important code pre-merge; session mode + code; pasted diff + any check; explicit hunt | hard-code-review                   | stage-automatic · overlay-linked · content-present · user-explicit                                                  | bounded findings; never fixes or approves                |
 | symptom present                                                                       | diagnosing-bugs                    | content-present                                                                                                     | diagnosis before change                                  |
@@ -223,13 +232,13 @@ Pointers only; trigger semantics live in Layer 2.
 | Record accepted work; edit agent-facing docs                                                     | [writing-for-agents.md](references/writing-for-agents.md) · [markdown-tables-and-diagrams.md](references/markdown-tables-and-diagrams.md)                                       |
 | Research external facts                                                                          | [research.md](references/research.md)                                                                                                                                           |
 | Provenance of the collection                                                                     | [collection-overview.md](references/collection-overview.md)                                                                                                                     |
-| Configure tracker conventions                                                                    | [setup-matt-pocock-skills.md](references/setup-matt-pocock-skills.md)                                                                                                           |
+| Configure tracker conventions                                                                    | [setup-dev-skills.md](references/setup-dev-skills.md)                                                                                                                           |
 | Teach; guide a manual procedure; edit agent-facing docs (incl. the re-pitch and concision craft) | [teach.md](references/teach.md) · [wizard.md](references/wizard.md) · [writing-for-agents.md](references/writing-for-agents.md)                                                 |
-| Rebon Workflow display for an isolated-mode UltraWork run                                        | [rebon-workflow-visual-display.md](references/rebon-workflow-visual-display.md)                                                                                                 |
+| Optional Rebon Workflow display for a selected UltraWork run                                      | [rebon-workflow-visual-display.md](references/rebon-workflow-visual-display.md)                                                                                                 |
 
 ## Standing contract
 
-1. Modes classify the development host only; project runtime constraints come from the project's governing documents.
+1. Modes classify the development host and workload; target-application execution rules are outside this skill.
 2. A Standing Development Gate Authorization covers only its named gates; an uncovered gate pauses for the human.
 3. Role separation is mode-invariant. A reviewer NEVER implements, fixes, approves, or publishes; findings return to the loop.
 4. Review exists in three places only — intake (ask-dev-dispatched, non-persistent), grill infrastructure (always on during grilling), session mode (never-inferred: explicit phrase, or deterministic offer plus affirmative reply; carried across stages with notification). All three are findings-only: none records, edits documents, or publishes. Recording belongs to the active workflow — grilling's with-docs instruction, or the workflow's normal artifacts, after human resolution.

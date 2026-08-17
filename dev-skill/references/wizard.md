@@ -13,6 +13,6 @@ A wizard is a temporary, stage-by-stage procedure, used only for actions requiri
 3. **Author a temporary script or checklist** in the repository's native platform. Each stage: one focused task, a confirmation gate, an explicit output, an idempotent write location. Hidden input for secrets; never write secrets to logs or append-only project records.
 4. **Verify and hand off.** Run syntax/static checks without performing irreversible actions; trace that every stage-1 value is captured at its declared destination. Tell the human how to run it and what evidence to return.
 
-## Project adaptation
+## Host adaptation
 
-In this Windows/Python project, prefer a small PowerShell or Python wizard over an unportable Bash-only script. Any state mutation still goes through the Python Controller; a wizard may prepare a bounded input or guide a human, but cannot publish templates, authorize execution, or write governed artifacts directly. Keep the wizard temporary unless the human explicitly requests a repeatable, documented setup path.
+Prefer the host project's native shell or scripting language over an unportable Bash-only script. Any governed state mutation still goes through the project's accepted authority; a wizard may prepare a bounded input or guide a human, but cannot publish decisions, authorize execution, or write governed artifacts directly. Keep the wizard temporary unless the human explicitly requests a repeatable, documented setup path.

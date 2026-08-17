@@ -1,6 +1,6 @@
 # Rebon Workflow visual display
 
-Applies only when the development host is Rebon, with any selected provider, and Rebon Workflow support is available. In this admitted branch, all delegated DevSkill role work runs through visible Rebon Workflow runs. Codex, Claude, unknown hosts or providers, and any agent without Workflow support remain outside this reference and use their native workflow.
+Applies only when the development host is Rebon, the selected workload is UltraWork, Rebon Workflow support is available, and the user elects the visible display. The display is optional: normal Rebon work may use the host's native workflow without it. A local single-model provider remains sequential and does not enter this reference when it cannot provide the model calls required by a Workflow run. Codex, Claude, unknown hosts or providers, and agents without Workflow support use their native or sequential workflow.
 
 Read together with [ultrawork-orchestration.md](ultrawork-orchestration.md): UltraWork is the methodology and authority contract; the Workflow tool is its visible dispatch vehicle.
 
@@ -17,9 +17,9 @@ Read together with [ultrawork-orchestration.md](ultrawork-orchestration.md): Ult
 
 ## Admission and non-interference
 
-Confirm the Development Execution Profile before dispatch. If Rebon host identity, online-provider status, or Workflow support is unknown, ask the human before task-specific work and keep this reference `not_applicable` until admission is confirmed; never infer admission from a model name or an Agent tool.
+Confirm the Development Execution Profile before dispatch. If Rebon host identity, provider status, selected workload, display choice, or Workflow support is unknown, ask the human before task-specific work and keep this reference `not_applicable` until admission is confirmed; never infer admission from a model name or an Agent tool.
 
-The display adds no project authority, gate, task, or plan. Python remains runtime mutation authority, DevSkill remains development methodology, the reviewed applied plan remains the execution-board source, and humans retain every normative decision. A phase or card shown complete in the Workflow UI is orchestration evidence only.
+The display adds no project authority, gate, task, or plan. DevSkill remains the development methodology, the reviewed applied plan remains the execution-board source, and humans retain every normative decision. A phase or card shown complete in the Workflow UI is orchestration evidence only.
 
 ## Script classes
 
@@ -34,7 +34,7 @@ The execution-script gate blocks only `kanban_execution_script`; it never blocks
 
 ## Mandatory visible dispatch
 
-Inside the admitted branch, dispatch every DevSkill role through a Workflow run: Reader/Task Breaker, Planner, Deep Reviewer, every sequential Applier group, estimators, partition readers, aggregators, assemblers, implementation/test/verification/integration/reconciliation cards, grill option analysis, facilitation, deep review, research verification, the code-review axes (Standards · Spec · Correctness), hard-code-review probes, and repair, split, recovery, and replacement-card roles. Never dispatch these as standalone `Agent` calls.
+Inside the admitted display branch, dispatch every UltraWork role through a Workflow run: Reader/Task Breaker, Planner, Deep Reviewer, every sequential Applier group, estimators, partition readers, aggregators, assemblers, implementation/test/verification/integration/reconciliation cards, grill option analysis, facilitation, deep review, research verification, the code-review axes (Standards · Spec · Correctness), hard-code-review probes, and repair, split, recovery, and replacement-card roles. When the display is not selected, use the host's native delegated or sequential role contract instead of standalone work that bypasses the selected strategy.
 
 The coordinator may remain outside the visual run only for orchestration actions: freezing and digesting packets, validating returned artifacts, admitting dependencies and write leases, authoring scripts, consuming compact summaries, and recording mechanical workflow dispositions. Report, ledger, roadmap-evidence, report-index, or other project-artifact writing remains role work and must use visible close-stage cards. Coordinator actions must not hide substantive role work.
 
@@ -82,6 +82,6 @@ Treat a `null` pipeline result, missing artifact, digest mismatch, invalid struc
 
 ## Authority and close stage
 
-The Workflow run returns compact card evidence. It does not implicitly update roadmaps, publish decisions, mutate Python-owned runtime state, or satisfy a human gate. When existing authority admits close-stage artifact changes, the applied plan includes visible cards for the report, ledger, roadmap evidence, report index, or other project files. After those cards pass, the coordinator mechanically validates their evidence and records the final workflow disposition: exact run, applied-plan digest, card dispositions, verification evidence, and next pointer. Human answers and approvals remain outside the Workflow run.
+The Workflow run returns compact card evidence. It does not implicitly update roadmaps, publish decisions, or satisfy a human gate. When existing authority admits close-stage artifact changes, the applied plan includes visible cards for the report, ledger, roadmap evidence, report index, or other project files. After those cards pass, the coordinator mechanically validates their evidence and records the final workflow disposition: exact run, applied-plan digest, card dispositions, verification evidence, and next pointer. Human answers and approvals remain outside the Workflow run.
 
 Never let the Workflow tool or its agents invent cards, decide unresolved human questions, publish human-owned decisions, expand write sets, impersonate the human, or use Rebon subagents when the selected provider is local.

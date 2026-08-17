@@ -10,7 +10,7 @@
 
 # To Tickets
 
-Break a plan, spec, or conversation into **tickets** — tracer-bullet vertical slices, each declaring the tickets that **block** it. The issue tracker and triage vocabulary should have been provided — run `/setup-matt-pocock-skills` if not.
+Break a plan, spec, or conversation into **tickets** — tracer-bullet vertical slices, each declaring the tickets that **block** it. The issue tracker and triage vocabulary should have been provided — run `/setup-dev-skills` if not.
 
 ## Process
 
@@ -21,7 +21,7 @@ Break a plan, spec, or conversation into **tickets** — tracer-bullet vertical 
 **Wide refactors are the exception to vertical slicing**: one mechanical change (rename a column, retype a shared symbol) whose blast radius fans across the codebase so no vertical slice can land green. Sequence it **expand–contract**: first *expand* — add the new form beside the old so nothing breaks; then *migrate* call sites in batches sized by blast radius (per package, per directory), each batch its own ticket blocked by the expand, CI green batch-to-batch because the old form still exists; finally *contract* — delete the old form once no caller remains, in a ticket blocked by every migrate batch. When even batches can't stay green alone, keep the sequence on a shared integration branch blocking a final integrate-and-verify ticket — green is promised only there.
 
 4. **Quiz the user.** Present the breakdown as a numbered list — per ticket: **Title**, **Blocked by**, **What it delivers** (the end-to-end behaviour). Ask: is the granularity right (too coarse / too fine)? Are the blocking edges correct — each ticket depending only on genuine gates? Should any be merged or split? Iterate until approved.
-5. **Publish only after explicit human approval.** The tracker configured by `/setup-matt-pocock-skills` decides the shape:
+5. **Publish only after explicit human approval.** The tracker configured by `/setup-dev-skills` decides the shape:
 
 - **Local files** — one file per ticket under `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01` in dependency order (blockers first); each "Blocked by" lists its dependencies. One ticket per file, never a combined file.
 - **Real tracker (GitHub, Linear, …)** — one issue per ticket in dependency order so blocking edges reference real identifiers; use the platform's native blocking/sub-issue relationship where it exists. Apply the `ready-for-agent` label unless instructed otherwise — the tickets are agent-grabbable by construction.

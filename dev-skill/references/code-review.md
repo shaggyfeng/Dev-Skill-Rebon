@@ -14,7 +14,7 @@ Axes of the diff between `HEAD` and a fixed point:
 - **Spec** — faithful implementation of the originating issue / PRD / spec.
 - **Correctness** — where the code actually fails: assume wrong, hunt failure mechanisms, severity-order findings.
 
-All three run in isolated role contexts so they don't pollute each other; dispatch per the mode table in `dev-skill/SKILL.md`. The issue tracker should have been provided — run `/setup-matt-pocock-skills` if `docs/agents/issue-tracker.md` is missing.
+All three run in isolated role contexts so they don't pollute each other; dispatch per the mode table in `dev-skill/SKILL.md`. The issue tracker should have been provided — run `/setup-dev-skills` if `docs/agents/issue-tracker.md` is missing.
 
 ## Process
 

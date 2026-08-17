@@ -1,10 +1,10 @@
 # UltraWork orchestration
 
-UltraWork is the Work-stage execution strategy selected by the mode table in [SKILL.md](../SKILL.md). **Isolated mode** runs it in full — this reference is that contract; on Rebon with Workflow support, dispatch runs through the visible vehicle in [rebon-workflow-visual-display.md](rebon-workflow-visual-display.md), and on other isolated hosts through native subagent dispatch following the same stages, gates, and budgets. **Sequential mode** runs the modified variant: the same four-stage preflight, card contracts, bounded writes, and recovery, executed one fresh context at a time with handoff-doc packets as the state carrier and no parallel dispatch. **Parallel mode** does not use UltraWork (mode-table policy); its bounded-write and context-envelope disciplines still apply per the mode table. An existing plan is an input packet, never a bypass around the prework Kanban gate.
+UltraWork is the optional workload strategy selected by the mode table in [SKILL.md](../SKILL.md). Use it for cheap providers with usable subagents, long or unattended frontier runs, or tasks whose size makes bounded decomposition materially safer. Normal interactive frontier work may use the host's native workflow without UltraWork. A local single-model host runs the same four-stage roles sequentially through handoff packets when UltraWork-style decomposition is selected; it never assumes native subagent dispatch. On Rebon, Workflow is an optional visible dispatch vehicle when the user selects it for an UltraWork run. An existing plan is an input packet, never a bypass around the prework Kanban gate.
 
 ## Contents
 
-- Provider and capacity discovery
+- Provider, capacity, and workload discovery
 - Orchestration modes
 - One Kanban workflow per plan item
 - Pre-Kanban four-agent planning preflight
@@ -19,28 +19,29 @@ UltraWork is the Work-stage execution strategy selected by the mode table in [SK
 - Integration with other DevSkill workflows
 - Completion evidence
 
-## Preserve the development and runtime planes
+## Keep DevSkill development scope separate
 
-Never infer development concurrency from the project's runtime constraints. Modes classify the development host (see [SKILL.md](../SKILL.md)); the project's own governing documents define its runtime plane. Record a **Development Execution Profile** only after mode activation confirms isolated mode with subagent dispatch.
+DevSkill governs development orchestration only. It does not define, mutate, or summarize the target project's runtime, controller, deployment, or application authority. Those rules belong to the target project's own governing documents and are not repeated here. Record a **Development Execution Profile** only after mode activation confirms the host, provider, and available dispatch capacity.
 
-| Plane | Question answered | Example |
-|---|---|---|
-| Development Execution Profile | How many development-agent model calls may run concurrently? | An isolated-mode host with four available subagent slots |
-| Runtime plane | Which model executes the governed project and how is it serialized? | A project controller using one local llama.cpp profile |
+| Development field | Question answered | Example |
+| --- | --- | --- |
+| `host_kind` | Which host is coordinating development? | Rebon, Codex, or another agent host |
+| `provider_kind` | Which provider class is available to the development host? | Local single-model or online frontier provider |
+| `host_subagents_available` | Can the host dispatch fresh-context subagents? | `true` for a host exposing usable subagent calls |
+| `max_simultaneous_model_calls` | What development concurrency has been verified? | A human-confirmed or host-reported limit |
+| `workload_strategy` | Is native, full UltraWork, or sequential decomposition selected? | `native`, `ultrawork`, or `sequential` |
 
-An isolated-mode development swarm may build and test a controller whose runtime model remains local and strictly serialized. Neither plane changes the project's own controller or governing artifacts.
+## Provider, capacity, and workload discovery
 
-## Provider and capacity discovery
+Confirm host/provider identity and the selected workload strategy before creating a Development Execution Profile or Kanban cards. Evidence order:
 
-Confirm isolated-mode admission before creating a Development Execution Profile or Kanban cards. Evidence order:
-
-1. Confirm the mode classification from trusted host metadata or an explicit human statement.
-2. Read the host's subagent-tool availability and explicit concurrency limit.
-3. Reuse a current human-confirmed Development Execution Profile only for the same host session.
-4. If mode or capacity is unknown, ask the human before task-specific work; until confirmed, classify UltraWork `not_applicable` — never guess.
+1. Confirm host and provider classification from trusted metadata or an explicit human statement.
+2. Read the host's subagent availability and verified concurrency limit when the selected strategy may delegate.
+3. Reuse a current human-confirmed Development Execution Profile only for the same host session and workload.
+4. If host, provider, capacity, or workload strategy is unknown, ask the human before task-specific work; until confirmed, classify UltraWork `not_applicable` — never guess.
 
 | Field | Meaning |
-|---|---|
+| --- | --- |
 | `host_kind` | Host kind, e.g. `rebon`, `codex`, or other |
 | `provider_kind` | Provider kind per the mode table |
 | `provider_source` | Host metadata, trusted config, or human confirmation |
@@ -49,37 +50,35 @@ Confirm isolated-mode admission before creating a Development Execution Profile 
 | `host_agent_limit` | Host-side active-agent limit when known |
 | `human_parallelism_cap` | Optional human cap for this development run |
 | `effective_parallelism` | Minimum of the applicable positive limits and the ready dependency frontier |
-| `runtime_provider_separate` | Explicit acknowledgement that the project runtime plane is separate |
+| `workload_strategy` | `native`, `ultrawork`, or `sequential` |
 
-Refresh the profile when the provider, model endpoint, account, tool availability, or human cap changes; a resumable checkpoint records the profile fields and evidence source. If the host re-classifies out of isolated mode, the profile becomes inapplicable and this workflow stops governing new work.
+Refresh the profile when the provider, account, tool availability, concurrency, or workload choice changes; a resumable checkpoint records the profile fields and evidence source. If the selected workload no longer justifies UltraWork, stop creating new UltraWork cards and continue through the host's native workflow or the sequential handoff path.
 
-## Admission modes
+## Admission strategies
 
-| Mode | Admission condition | Rule |
-|---|---|---|
-| `isolated_full` | Mode activation classifies isolated mode with subagent dispatch | Run dependency-independent, write-disjoint cards up to `effective_parallelism` |
-| `sequential_modified` | Mode activation classifies sequential mode | Run the same stages, gates, and bounded writes one fresh context at a time; handoff-doc packets carry state between roles; no parallel dispatch |
-| `not_applicable` | Parallel mode, or unconfirmed mode | Do not apply this reference; bounded writes and envelopes follow the mode table |
+| Strategy | Admission condition | Rule |
+| --- | --- | --- |
+| `isolated_full` | UltraWork selected with usable subagent dispatch | Run dependency-independent, write-disjoint cards up to `effective_parallelism` |
+| `sequential_modified` | UltraWork selected on a local single-model host or a host without usable subagents | Run the same stages, gates, and bounded writes one role at a time; handoff packets carry state between roles |
+| `not_applicable` | Native workload or unconfirmed strategy | Do not apply this reference; use the host's native workflow and ordinary repository instructions |
 
-Local project runtime calls stay serialized whenever the project's runtime plane requires it, even during isolated-mode development; parallel developers may prepare fixtures or inspect code but must not concurrently call a single serialized runtime endpoint.
+## Plan-driven Kanban gate (UltraWork-selected workload)
 
-## Plan-driven Kanban gate (isolated mode)
+Within an UltraWork-selected run, the Kanban workflow is mandatory for every plan-driven task — including one with a detailed checklist or an apparently one-small-edit task. The coordinator first creates a bounded prework packet, runs the four-stage pre-Kanban preflight, validates the artifacts, then creates one execution board for the applicable roadmap or checklist item, only from that validated final atomic plan. A host with usable subagents delegates the roles; a local single-model host runs them sequentially through handoff packets. Native normal work has no Kanban obligation.
 
-Within an isolated-mode UltraWork run, the Kanban workflow is mandatory for every plan-driven task — including one with a detailed checklist or an apparently one-small-edit task. The coordinator first creates a bounded prework packet, runs the four-stage pre-Kanban preflight (the generic visible `preflight_display_harness` on Rebon, or equivalent fresh-context stages on other isolated hosts), validates the artifacts, then creates one execution board for the applicable roadmap or checklist item, only from that validated final atomic plan. Sequential mode runs the same gate with sequential fresh-context stages; parallel mode has no such gate.
-
-The generic preflight harness and item-specific execution script are different script classes. The execution-script gate blocks only the latter; the generic harness contains no item-specific cards or implementation work. Every delegated DevSkill role in an isolated-mode run — preflight, implementation, verification, review, integration, aggregation, recovery — runs through the mode's dispatch contract (visible Workflow run on Rebon; native subagent dispatch elsewhere); never through an unrelated standalone call.
+The generic preflight harness and item-specific execution script are different script classes. The execution-script gate blocks only the latter; the generic harness contains no item-specific cards or implementation work. Every delegated DevSkill role in an UltraWork run uses the selected dispatch contract: visible Workflow on Rebon only when the user selects that display, native subagent dispatch on another capable host, or a fresh sequential role context on a local host; never an unrelated standalone call.
 
 Provider capacity changes dispatch width, not whether the four stages exist:
 
-| Mode | Reader/Task Breaker → Planner → Deep Reviewer → Plan Applier | Execution |
-|---|---|---|
+| Strategy | Reader/Task Breaker → Planner → Deep Reviewer → Plan Applier | Execution |
+| --- | --- | --- |
 | `isolated_full` | Fresh-context subagents perform the roles; Applier groups remain sequential | Independent, write-disjoint cards may run in parallel after the board is valid |
 | `sequential_modified` | The same roles as sequential fresh-context passes with handoff packets | One role at a time, in dependency order |
-| `not_applicable` | No obligation from this reference | Parallel mode uses the mode table's discipline |
+| `not_applicable` | No obligation from this reference | Native normal work uses the mode table's discipline |
 
-## Pre-Kanban four-agent planning preflight
+## Pre-Kanban four-role planning preflight
 
-Before the coordinator creates an item-specific execution script for an admitted plan-driven task or slice, run this fixed four-agent sequence with fresh context-isolated subagents (inside the generic visible preflight harness on Rebon, or equivalent fresh contexts on other isolated hosts):
+Before the coordinator creates an item-specific execution script for an admitted plan-driven task or slice, run this fixed four-role sequence. A host with usable subagents assigns each role to a fresh context; a local single-model host runs each role one at a time with a separate handoff packet. A native normal workload does not enter this reference.
 
 1. **Reader/Task Breaker (Explore role).** Read and search the bounded task-local packet; break the request into concrete subtasks. The coordinator supplies the goal, accepted and excluded scope, search questions, authoritative paths, and report schema. The Reader may map seams, tests, provider facts, and dependencies, but may not edit files, make normative decisions, review a plan, or write either script class. Returns a concise `reader` artifact: searched paths, findings, subtask IDs, unresolved questions, evidence pointers.
 2. **Planner.** Consume the Reader artifact and bounded authoritative packet; atomize subtasks further where that reduces context or conflict risk; assign the narrowest worker roles; define inputs, outputs, dependencies, write sets, verification, context budgets. Must not search task-local files when an online Reader is available, nor write either script class. Returns a concise `plan` artifact.
@@ -92,11 +91,17 @@ The coordinator may create the item-specific execution script only after the Rea
 
 ### Stage failure and delegated repair
 
-If any stage fails: record the failed stage, keep the execution-script gate closed, dispatch bounded repair through a visible recovery Workflow run (repair roles return concise diagnostics or corrected artifacts, never bypassing role boundaries), rerun the failed stage plus every dependent stage; for an Applier-group failure, discard that group and all later applied groups and rerun the chain from the failed group. Only after the full chain passes again may the execution script be created. After the first workflow exists, discovery, implementation, and review follow the board's card contracts and dependency state; the four-agent preflight reruns for every new slice or materially revised remainder.
+If any stage fails: record the failed stage, keep the execution-script gate closed, and use the selected dispatch contract for bounded repair. A capable delegated host may run a visible or native recovery role; a local single-model host enters a separate bounded repair-role context and then reruns the failed stage plus every dependent stage. For an Applier-group failure, discard that group and all later applied groups and rerun the chain from the failed group. Only after the full chain passes again may the execution script be created. After the first workflow exists, discovery, implementation, and review follow the board's card contracts and dependency state; the four-role preflight reruns for every new slice or materially revised remainder.
+
+## Workflow-script authoring guardrail
+
+Treat a script-load failure as a defect in the generated script, not as a failed development plan. A backtick-delimited JavaScript template literal MUST NOT contain an unescaped literal backtick; use single- or double-quoted text for the nested prompt instead. Scan every generated prompt constant and runtime interpolation before dispatch, including conversation, implementation, metadata, and review prompts.
+
+When a script fails to load, preserve the run identifier, fix the smallest script defect, verify the corrected script parses, and resume the same run with `resumeFromRunId`. Never recreate the entire workflow for a load-time syntax or interpolation failure, because recreation discards valid run state and repeats the defect. Completion requires the resumed run to emit valid structured results and pass the normal artifact and digest checks.
 
 ## Subagent context-envelope protocol
 
-Every subagent in an isolated-mode UltraWork run whose card does more than produce a summary or concise handoff uses a two-part envelope (hosts outside an UltraWork run follow the mode table):
+Every role in a full or sequential UltraWork run whose card does more than produce a summary or concise handoff uses a two-part envelope (hosts outside an UltraWork run follow the mode table):
 
 1. **Reader Summary at start** — before analysis or editing, read only the bounded inputs and emit a structured summary: `card_id`, `packet_digest`, objective, accepted and excluded scope, files read, relevant facts, dependencies, constraints, unresolved questions — repeating the exact `card_id` and `packet_digest`. No wholesale copying; no claimed unread facts. This summary is the context contract for the work body.
 2. **Concise Writer Summary at end** — same `card_id` and `packet_digest`, output artifacts and digests, changes or findings, exact checks and results, failures or deviations, unresolved authority, next-card pointer. Never a transcript, hidden chain-of-thought, or artifact duplicate.
@@ -105,7 +110,7 @@ Every subagent in an isolated-mode UltraWork run whose card does more than produ
 
 ## Bounded content-bearing writes
 
-In an UltraWork run (isolated or sequential), every content-bearing write or edit payload is measured before dispatch, hard maximum **350 model-token units**. Unmeasurable = over budget = split. Applies to generated file/artifact content including substantive prompt fragments; excludes control metadata (card IDs, paths, digests, dependency handles, script-routing fields). Hosts not running UltraWork follow the mode table's context discipline.
+In a full or sequential UltraWork run, every content-bearing write or edit payload is measured before dispatch, hard maximum **350 model-token units**. Unmeasurable = over budget = split. Applies to generated file/artifact content including substantive prompt fragments; excludes control metadata (card IDs, paths, digests, dependency handles, script-routing fields). Hosts not running UltraWork follow the mode table's context discipline.
 
 Never emit a complete module, report, or specification in one write even if it appears to fit: a file-producing card starts with a small header or scaffold, then sequential append-edits or bounded patches owned by one writer chain, each fragment read back or digested before the next. If the artifact cannot fit bounded fragments without harming its responsibility boundary, split the design into reviewed modules rather than weakening the budget. An overflowing writer preserves its partial fragment, invalidates dependent later fragments, re-estimates the partition, and resumes with smaller groups.
 
@@ -127,7 +132,7 @@ The coordinator validates mechanically (every in-scope byte/line covered exactly
 
 One board per roadmap item, checklist item, or accepted vertical slice — never one board for a phase or plan. The plan item is the board outcome; its atomic subtasks are cards.
 
-Before creating cards, the coordinator assigns this bounded read set to Explore subagents and consumes their compact reports rather than searching task-locally itself:
+Before creating cards, a host with usable subagents assigns this bounded read set to Explore subagents and consumes their compact reports rather than searching task-locally in the coordinator. A local single-model host performs the same bounded read as its sequential Reader role and carries the compact report forward:
 
 1. the exact roadmap item and its status;
 2. the active implementation guide, specification, ADRs, accepted decisions;
@@ -139,7 +144,7 @@ The coordinator itself reads `AGENTS.md`, `dev-skill/SKILL.md`, and the directly
 
 ## Per-slice preflight and Kanban build cycle
 
-Run the four-agent preflight for every plan-driven slice — including small ones — before building the board, with context-isolated Reader, Planner, Deep Reviewer, sequential Applier-group, and implementation subagents. Applier groups are always sequential (each consumes the previous applied digest); provider capacity changes other roles' dispatch, not this order.
+Run the four-role preflight for every plan-driven slice in an UltraWork-selected workload — including small ones — before building the board. A delegated host uses fresh-context Reader, Planner, Deep Reviewer, sequential Applier-group, and implementation roles; a local host runs the same roles one at a time. Applier groups are always sequential (each consumes the previous applied digest); provider capacity changes other roles' dispatch, not this order.
 
 The four compact artifacts use stable paths such as `.rebon/tmp-<slice>-reader.md`, `-plan.md`, `-review.md`, `-applied-plan.md`, each carrying the slice packet digest and a schema/version marker. The final applied plan contains: fine-grained subtask IDs; bounded inputs, read sets, write sets, exclusions; one expected output artifact per subtask; focused verification commands or review criteria; dependency order and parallel-safety classification; context-size evidence that every subtask fits one fresh context; close-stage cards for roadmap evidence, Structural Trace Ledger, report, and report index.
 
@@ -166,7 +171,7 @@ When admitted, record a `Coordinator Fallback Admission`: slice ID, three failed
 Each card fits comfortably in one fresh context; split before dispatch on multiple independent outcomes, overlapping design and implementation authority, too many files, or multiple substantial verification cycles. Roughly one third of a fresh context is a warning threshold, not a precision measure.
 
 | Card field | Required content |
-|---|---|
+| --- | --- |
 | `card_id` | Stable board-local identity |
 | `parent_item` | Exact roadmap item or vertical slice |
 | `objective` | One checkable subtask outcome |
@@ -203,7 +208,7 @@ stateDiagram-v2
     SplitRequired --> Backlog: replacement cards created
 ```
 
-The board is authoritative for orchestration state only — it publishes no project decisions, mutates no project-owned runtime state, and replaces no accepted roadmap or governance artifacts.
+The board is authoritative for orchestration state only — it publishes no project decisions and replaces no accepted roadmap or governance artifacts.
 
 ## Dispatch and context rules
 
@@ -217,18 +222,18 @@ The board is authoritative for orchestration state only — it publishes no proj
 8. Subagents read the detailed files their cards need; the orchestrator stays on roadmap lines, status, summaries, digests, integration evidence.
 9. Never give one Reader Summary worker an unbounded read set: Reader-Budget Estimator first, validated partition count, Aggregator before downstream roles.
 10. Never give a writer an oversized emission: Task-Budget Estimator first; one bounded fragment per sequential writer group; verify each digest; assemble after the chain passes.
-11. Dispatch every role through the mode's dispatch contract ([rebon-workflow-visual-display.md](rebon-workflow-visual-display.md) on Rebon; native dispatch elsewhere), exact card IDs as labels, card groups as phases. Coordinator-only admission, mechanical validation, script authoring, and workflow disposition stay outside the run; report, ledger, roadmap-evidence, report-index, and other project-artifact writes use visible close-stage cards.
+11. Dispatch every role through the selected strategy's contract. When the user has selected Rebon Workflow display, use [rebon-workflow-visual-display.md](rebon-workflow-visual-display.md); otherwise use native delegated dispatch or the sequential local role loop. Coordinator-only admission, mechanical validation, script authoring, and workflow disposition stay outside the run; report, ledger, roadmap-evidence, report-index, and other project-artifact writes use visible close-stage cards only when the display is selected.
 
 ## Standing Development Gate Authorization
 
-A human may preauthorize eligible development gates for an exact roadmap scope; with the standing authorization present, those gates need not pause execution. The record names the roadmap scope, allowed gate classes, allowed mutations, expiry or terminal condition, and exclusions; the orchestrator records which authorization satisfied each gate and continues. Standing authorization never silently covers a new normative design decision, runtime human judgment, publication outside the named scope, destructive action, external side effect, secret access, permission expansion, or a materially broadened mission unless the human explicitly includes that class. An uncovered gate moves its branch to `HumanGate`; independent authorized cards continue.
+A human may preauthorize eligible development gates for an exact roadmap scope; with the standing authorization present, those gates need not pause execution. The record names the roadmap scope, allowed gate classes, allowed mutations, expiry or terminal condition, and exclusions; the orchestrator records which authorization satisfied each gate and continues. Standing authorization never silently covers a new normative design decision, human judgment, publication outside the named scope, destructive action, external side effect, secret access, permission expansion, or a materially broadened mission unless the human explicitly includes that class. An uncovered gate moves its branch to `HumanGate`; independent authorized cards continue.
 
 ## Failure recovery
 
 Classify before retrying:
 
 | Failure | Recovery |
-|---|---|
+| --- | --- |
 | Temporary transport or host interruption | Retry the same bounded card within its retry policy |
 | Context overflow, "too complicated," or unfinished multi-outcome work | Preserve partial artifacts, replace the card with smaller dependency-linked cards, fresh contexts |
 | Reader Summary worker context exhaustion or partition omission | Preserve partial evidence, rerun the Reader-Budget Estimator for the affected partition or summary level, split smaller, re-aggregate; never resend unchanged |
@@ -238,7 +243,7 @@ Classify before retrying:
 | Deterministic test failure | Diagnose; revise or split the responsible card, not the whole roadmap item |
 | Write-set collision or conflicting candidates | Stop both integrations, preserve candidates, one serialized reconciliation card |
 | Missing human authority not covered by standing authorization | `HumanGate`; continue only independent authorized cards |
-| Runtime local-model contention | Serialize through the project runtime lease; never raise development parallelism against that endpoint |
+| Development endpoint contention | Respect the selected provider's verified development capacity; never exceed the admitted concurrency |
 | Three materially revised, reviewed Kanban generations fail after bounded recovery | Admit the coordinator for the exact blocker only; verify; rebuild Kanban for all unfinished work |
 
 Never relaunch an oversized card unchanged — splitting is the corrective action. A failed generation counts toward coordinator fallback only after its internal resume, diagnosis, and split recovery is exhausted and the next generation materially changes the reviewed plan.
@@ -251,7 +256,7 @@ Four failure modes destroyed runs and must never recur:
 
 1. **An artifact-producing stage returned text without writing its file.** The spec:draft stage made nine read/grep calls, reported completion, never wrote the spec; the workflow accepted the text return; the review stages found the artifact absent; the fix stage burned its budget re-deriving the missing spec. Rule: a file-producing stage is complete only after verifying the file exists (read-back or digest check); every artifact-producing stage gets a verify sub-step; a text-only return is never completion.
 2. **A failed workflow run was re-run whole instead of resumed or split.** The orchestrator re-created and re-ran failing workflows (15 failed runs, 83 sub-agent spawns, 456,796 session events, a 1.48 GB event log) instead of using the engine's resume mechanism. Rule: after a run failure, resubmit the same script with `resumeFromRunId` (completed stage results are cached and replay; only failed or changed stages run); if the same stage fails twice, split it into smaller stages — never run it a third time; once workflow re-runs hit a cap, the plan is the problem — revise it, don't retry.
-3. **A workflow script failed at load and the whole workflow was re-created instead of the script being fixed.** On the V7 P04.0 attempt the generated script interpolated a runtime stage result with a raw template-literal placeholder (`${GROUNDING_RESULT}`) inside a backtick prompt; JavaScript evaluates `${...}` at script load, so the workflow died instantly with `ReferenceError` before any stage ran; the orchestrator then authored two more whole new workflows instead of fixing the one-line bug and resuming. Rule: never use raw `${NAME}` template-literal interpolation for runtime values in a generated workflow script — escape it as `\${NAME}` and substitute with `.replace()`, or compose prompts via a function. A workflow that fails at load (syntax error or `ReferenceError`) is a script bug: fix the script and resume the same run, never re-create the workflow whole.
+3. **A workflow script failed at load and the whole workflow was re-created instead of the script being fixed.** On the V7 P04.0 attempt the generated script interpolated a stage result with a raw template-literal placeholder (`${GROUNDING_RESULT}`) inside a backtick prompt; JavaScript evaluates `${...}` at script load, so the workflow died instantly with `ReferenceError` before any stage ran; the orchestrator then authored two more whole new workflows instead of fixing the one-line bug and resuming. Rule: never use raw `${NAME}` template-literal interpolation for values in a generated workflow script — escape it as `\${NAME}` and substitute with `.replace()`, or compose prompts via a function. A workflow that fails at load (syntax error or `ReferenceError`) is a script bug: fix the script and resume the same run, never re-create the workflow whole.
 4. **A workflow stage ended its turn without a valid `StructuredOutput` call, and fallback JSON extraction failed.** On the V7 P04.5 abort the `p04.5:spec` worker ended its turn text-only (`completed`, `StructuredOutput tool calls=0`); the engine's coercion message still produced no parseable JSON; the run was rejected with `StructuredOutputFallbackParseError`. Rule: a stage that must return structured data is complete only when its final turn contains a valid `StructuredOutput` call (or final_text whose JSON parses); treat fallback-parse errors as failed — fix the prompt/script, then resume or split; never re-run whole.
 
 Orchestrator context ceiling: keep the orchestrator context under the hard guard threshold (~50K tokens of history) by checkpointing per roadmap item and delegating file reads. The crashed sessions' orchestrator context was pruned at 90–115K repeatedly in their final minutes before the provider stream failed mid-request — sustained iteration-limit failures are a plan-size signal, not a retry trigger. Session longevity: when the hard guard keeps pruning (repeatedly ≳90K) or the session event count reaches the hundreds of thousands, checkpoint per roadmap item (reports, roadmap checkmarks, handoff) and hand off to a fresh session; do not push the same session until the provider stream breaks. All three crash signatures — `body stream: error decoding response body` (P03 abort), `openai stream ended before a finish_reason or [DONE] marker` (P04.2, 41 frames; P04.5, 14,041 frames / 188,001 events / 205 MB) — hit the same session class; a stream ending mid-request without a finish marker is a runaway signal, not a transient retry.
@@ -259,11 +264,11 @@ Orchestrator context ceiling: keep the orchestrator context under the hard guard
 ## Integration with other DevSkill workflows
 
 | Workflow | UltraWork use |
-|---|---|
+| --- | --- |
 | Grilling (merged) | One option-analysis card per independent frontier question; a required round-integrator card orders questions and removes dependency conflicts; a facilitator card prepares the human-facing round. Freeze the round packet before the reviewer card runs; reviewer findings return to the griller for gap classification. The human answer returns through the orchestrator and remains the normative decision. |
 | Deep review and hard-code-review | A separate context-isolated reviewer card built from the authoritative packet — independent of implementer and grill roles, findings-only, never deciding for the human. |
 | Two-layer planning | Parallelize bounded repository-fact and candidate-view cards when allowed; a dedicated integration card synchronizes the Workflow Evolution and Structure/Authority views; validate the pair before disposition. |
-| Research | An isolated-mode host may parallelize independent primary-source packets; a separate verification-and-synthesis card checks citations and stages the finding before disposition. |
+| Research | An UltraWork-selected host may parallelize independent primary-source packets; a separate verification-and-synthesis card checks citations and stages the finding before disposition. |
 | Specifications and tickets | Subagents inspect seams and propose bounded sections; a dedicated integration card integrates. Human resolutions and accepted source artifacts constrain the integrator — it cannot invent normative meaning. |
 | Implementation and TDD | Disjoint implementation, fixture, and verification cards; one writer per file or public seam at a time; integration serialized. |
 | Diagnosis | Parallelize independent read-only hypotheses or repro construction only without contending for the same runtime resource; a diagnosis-integration card compares evidence and stages the causal finding. |

@@ -51,7 +51,7 @@ Pre-rebuild copies of every superseded file are archived in `.scratch/dev-skill-
 - [`handoff.md`](handoff.md) — redacted context transfer to a sequential fresh pass.
 - [`phase-boundaries.md`](phase-boundaries.md) — continue, clear, hand off, or compact at boundaries.
 - [`writing-for-agents.md`](writing-for-agents.md) — agent-facing document and skill authoring.
-- [`setup-matt-pocock-skills.md`](setup-matt-pocock-skills.md) — configure tracker and documentation conventions.
+- [`setup-dev-skills.md`](setup-dev-skills.md) — configure tracker and documentation conventions.
 - [`wizard.md`](wizard.md) — human-only setup and migration procedures.
 
 ### Productivity and parallel tracks

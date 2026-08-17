@@ -1,14 +1,14 @@
-# setup-matt-pocock-skills reference
+# setup-dev-skills reference
 
 ---
 
-**name:** `setup-matt-pocock-skills`
+**name:** `setup-dev-skills`
 
 **description:** Configure this repo for the engineering skills — set up its issue tracker, triage label vocabulary, and domain doc layout. Run once before first use of the other engineering skills.
 
 **disable-model-invocation:** true
 
-# Setup Matt Pocock's Skills
+# Setup Development Skills
 
 Scaffold the per-repo configuration the engineering skills assume: **issue tracker** (GitHub default; local markdown supported out of the box), **triage labels** (strings for the canonical triage roles), and **domain docs** (where `CONTEXT.md` and ADRs live, plus consumer rules). A prompt-driven skill, not a deterministic script: explore, present, confirm, write.
 
@@ -66,7 +66,7 @@ Include the `### Triage labels` sub-block (and write `docs/agents/triage-labels.
 
 Tell the user setup is complete and which skills now read these files; they can edit `docs/agents/*.md` directly later — re-run only to switch trackers or restart from scratch.
 
-### Reference: setup-matt-pocock-skills/domain.md
+### Reference: setup-dev-skills/domain.md
 
 # Domain Docs
 
@@ -80,7 +80,7 @@ How the engineering skills consume this repo's domain documentation.
 
 **Flag ADR conflicts** explicitly rather than silently overriding: _"Contradicts ADR-0007 (event-sourced orders) — but worth reopening because…"_
 
-### Reference: setup-matt-pocock-skills/issue-tracker-github.md
+### Reference: setup-dev-skills/issue-tracker-github.md
 
 # Issue tracker: GitHub
 
@@ -120,7 +120,7 @@ Used by `/grilling` (path-finder instruction). The **map** is a single issue wit
 - **Claim**: `gh issue edit <n> --add-assignee @me` — the session's first write.
 - **Resolve**: `gh issue comment <n> --body "<answer>"`, then `gh issue close <n>`, then append a context pointer (gist + link) to the map's Decisions-so-far.
 
-### Reference: setup-matt-pocock-skills/issue-tracker-gitlab.md
+### Reference: setup-dev-skills/issue-tracker-gitlab.md
 
 # Issue tracker: GitLab
 
@@ -161,7 +161,7 @@ Used by `/grilling` (path-finder instruction). The **map** is a single issue wit
 - **Claim**: `glab issue update <n> --assignee @me` — the session's first write.
 - **Resolve**: `glab issue note <n> --message "<answer>"`, then `glab issue close <n>`, then append a context pointer (gist + link) to the map's Decisions-so-far.
 
-### Reference: setup-matt-pocock-skills/issue-tracker-local.md
+### Reference: setup-dev-skills/issue-tracker-local.md
 
 # Issue tracker: Local Markdown
 
@@ -194,7 +194,7 @@ Used by `/grilling` (path-finder instruction). The **map** is a file with one **
 - **Claim**: set `Status: claimed` and save before any work.
 - **Resolve**: append the answer under `## Answer`, set `Status: resolved`, append a context pointer (gist + link) to the map's Decisions-so-far in `map.md`.
 
-### Reference: setup-matt-pocock-skills/triage-labels.md
+### Reference: setup-dev-skills/triage-labels.md
 
 # Triage Labels
 

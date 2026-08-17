@@ -8,7 +8,7 @@
 
 **disable-model-invocation:** true
 
-Synthesize the current conversation context and codebase understanding into a spec (PRD). Do NOT interview the user. The issue tracker and triage vocabulary should have been provided — run `/setup-matt-pocock-skills` if not.
+Synthesize the current conversation context and codebase understanding into a spec (PRD). Do NOT interview the user. The issue tracker and triage vocabulary should have been provided — run `/setup-dev-skills` if not.
 
 ## Process
 
