@@ -33,6 +33,3 @@ Follow [`SKILL.md`](SKILL.md) in order: mode activation → stage detection → 
 
 The directory holds `SKILL.md`, `references/` (32 reference skills, one discipline each), and `agents/openai.yaml` (Rebon interface metadata).
 
-## Provenance
-
-Project adaptation of the upstream dev-skill 1.2.3 collection, rebuilt 2026-08-16 around three provider modes and five stages. Superseded files are archived in `.scratch/dev-skill-pre-rebuild-archive/`; the rebuild session is recorded in `docs/reviews/dev-skill-rebuild-deep-review-001.md`.
