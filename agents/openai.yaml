@@ -1,0 +1,4 @@
+interface:
+  display_name: DevSkill
+  short_description: Mandatory engineering workflow
+  default_prompt: Use $dev-skill and follow SKILL.md before engineering work.
