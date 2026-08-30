@@ -166,7 +166,7 @@ Route chooses what happens next.
 
 DevSkill Unslop builds on Matt Pocock’s [Skills for Real Engineers](https://github.com/mattpocock/skills).
 
-The original project brings real development methods into AI workflows. This overhaul connects those methods through routing, stage families, module contracts, durable state, and long-run execution.
+The original project brings real development methods into AI workflows. This overhaul expends and merges the modules, connects those methods through routing, stage families, module contracts, durable state, and long-run execution.
 
 ## Author
 
