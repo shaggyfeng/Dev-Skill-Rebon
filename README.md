@@ -4,7 +4,7 @@
 >
 > — ChatGPT 5.6
 
-DevSkill Unslop supports a **10+ hour run without human supervision** in [Rebon agents](https://reboncode.ai/). It keeps the main context clean, uses bounded subagents, restores state from project files, and selects the right skill from the task. Humans still control design and permissions.
+DevSkill Unslop supports 10+ hour runs **without human** for implement phase in [Rebon agents](https://reboncode.ai/). It keeps the main context clean, uses bounded subagents, restores state from project files, and selects the right skill from the task. Humans still control design and permissions.
 
 ## Routing Chooses the Skill
 
