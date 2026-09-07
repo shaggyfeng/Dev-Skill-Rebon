@@ -2,7 +2,7 @@
 
 ## Trigger and boundary
 
-Run when [Write](write.md) routes a conversation or a `lead_ungoverned` output without an explicit user setting, or when [Writing Style](writing-style.md) selects Talk Like King. A user naming the module is sufficient. It returns styled presentation to Write. Outside those routes, it is not the default for technical reports, roadmaps, procedures, or runtime instructions.
+Run when [Write](write.md) routes a non-instructional meeting-style, deep, multi-turn, or long human-facing conversation; a `lead_ungoverned` output without an explicit user setting; or when [Writing Style](writing-style.md) selects Talk Like King. A user naming the module is sufficient. It returns styled presentation to Write. Procedural steps, technical reports, roadmaps, documentation, and agent-facing instruction stay outside this default route; an explicit King selection still applies.
 
 ## Runtime references
 

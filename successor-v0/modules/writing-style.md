@@ -2,7 +2,7 @@
 
 ## Trigger and boundary
 
-Run when Write receives an explicit user setting, sample, or long-form creative, persuasive, promotional, story, or plot work. A user naming a style is sufficient. Writing Style selects presentation settings; it does not change meaning, decide content, or render the result.
+Run when Write receives an explicit user setting, sample, or long-form creative, persuasive, promotional, story, or plot work. A non-instructional meeting-style, deep, multi-turn, or long human-facing conversation goes directly from Write to Talk Like King unless an explicit setting or sample has priority. A user naming a style is sufficient. Writing Style selects presentation settings; it does not change meaning, decide content, or render the result.
 
 ## Toolbox
 

@@ -51,7 +51,7 @@ Route every engineering request before family work. Direct overlays precede stag
 
 User naming a module is sufficient when its local prerequisites hold. Every module also has a non-user trigger.
 
-When bound presentation needs a form, load [Write](successor-v0/modules/write.md); it returns rendered meaning to the caller. When Write selects a conversation, `lead_ungoverned` output without an explicit setting, or a King setting, load [Talk Like King](successor-v0/modules/talk-like-king.md); it returns styled presentation to Write. When Write receives an explicit setting or long-form creative work, load [Writing Style](successor-v0/modules/writing-style.md); it returns selected settings or a King route to Write.
+When bound presentation needs a form, load [Write](successor-v0/modules/write.md); it returns rendered meaning to the caller. When Write selects a non-instructional meeting-style, deep, multi-turn, or long human-facing conversation, `lead_ungoverned` output without an explicit setting, or a King setting, load [Talk Like King](successor-v0/modules/talk-like-king.md); it returns styled presentation to Write. When Write receives an explicit setting or long-form creative work, load [Writing Style](successor-v0/modules/writing-style.md); it returns selected settings or a King route to Write.
 
 ## Module contract
 

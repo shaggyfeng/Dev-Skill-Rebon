@@ -61,7 +61,7 @@ flowchart TB
 | Presentation | Write | Render reports, records, conversations, and instructions |
 | Presentation | Markdown Tables and Diagrams | Render a selected structure clearly |
 | Presentation | Writing Style | Select an explicit writing treatment |
-| Presentation | Talk Like King | Style conversation and creative work without changing meaning |
+| Presentation | Talk Like King | Style non-instructional conversation and creative work without changing meaning |
 | Release | Release | Reconcile work and return an effect or reopening path |
 
 Each module has a task trigger, inputs, operation, authority boundary, return, and recovery path. The user may name a module, but naming it is never the only way it starts.
