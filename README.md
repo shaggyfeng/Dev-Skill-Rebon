@@ -16,7 +16,7 @@ DevSkill Unslop turns an AI agent from a prompt-driven helper into a developer w
 
 DevSkill Unslop builds on Matt Pocock’s [Skills for Real Engineers](https://github.com/mattpocock/skills).
 
-Matt’s project brought real engineering methods into agent work. This release rebuilds their runtime topology around stage families, explicit module contracts, automatic routing, durable re-entry, and a stricter answer to AI slop.
+Matt’s project brought real engineering methods into agent work. This release rebuilds their runtime topology around stage families with more developed modules, explicit module contracts, automatic routing, durable re-entry, and a stricter answer to AI slop.
 
 ## A complete development route
 
