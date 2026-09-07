@@ -1,43 +1,43 @@
-# Ticket compilation
+# Ticket Compilation
 
-## Contract
+## Trigger and boundary
 
-| Field | Binding |
+Run from an accepted specification. A user naming the module is sufficient. It decomposes approved requirements into candidate Work slices; it does not redefine the specification or authorize Work.
+
+## Ticket structure
+
+| Field | Content |
 |---|---|
-| `contract_version` | `devskill.module.v0.2` |
-| Envelope | input and output each carry `runtime.module-envelope.v0.1` |
-| Prerequisites | trigger matched; complete current input/envelope, authority, runtime file, producer, and consumer admitted |
-| Trigger | exact `plan.specification.v0.1` digest has `status=specification_approved` |
-| Input | `plan.ticket-generation-input.v0.1`: `task_id`, `scope_digest`, `plan.specification.v0.1` with `status=specification_approved` and its `review_surface`, declared `artifact_kinds`, `family_context`, authority source IDs, exact frozen subject, producer, consumer, review kind, and required-axis derivation inputs, dependency graph, repository snapshot, execution profile, producer, consumer |
-| Output | `plan.ticket-set.v0.1`: stable ticket IDs, requirement coverage, objectives, transformations, inputs/exclusions, dependencies/blockers, read/write sets, `review_surface`, declared `artifact_kinds`, `family_context`, authority source IDs, exact frozen subject, producer, consumer, review kind and required-axis derivation inputs, acceptance/verification, recovery, resume pointer, status, consumer |
-| Authority | candidate Work decomposition only |
-| Failure | `ticket_repartition` or `plan_revision` |
-| Consumer | `plan.ticket-set.resolve`; its approved branch continues through `plan.work-start.compile` then `plan.work-start.resolve` |
+| Title and outcome | Short name and one independently observable end-to-end result |
+| Requirement coverage | Specification requirements and acceptance conditions the slice fulfills |
+| Scope | Transformation, inputs, exclusions, read/write ownership, and affected seam |
+| Dependencies | Only true blockers; no cycles or hidden shared-state conflicts |
+| Completion | Verification, recovery path, and exact next consumer |
+
+A vertical slice crosses the layers needed for one observable result and is demoable or verifiable alone. A wide mechanical change uses expand, migrate, contract: add the compatible form, move callers in independently valid batches, then remove the old form. The caller chooses any durable tracker or file location; this module returns the candidate set only.
+
+## Runtime references
+
+| When | Load | Return or use |
+|---|---|---|
+| An accepted specification must become Work slices | [Plan](../plan.md) | Candidate ticket set to Plan approval and Work handoff |
+| A ticket must define an executable Work slice | [Implementation and TDD](implementation-and-tdd.md) | Objective, scope, accepted seam, behavior test, verification, and consumer fields |
+| A ticket set conflicts with the requirement contract | [To-Spec](to-spec.md) or [Design](../design.md) | Corrected specification or Design meaning |
+| A partition or priority choice is semantic | [Review](review.md), then [Decision](decision.md) | Findings and semantic disposition for the ticket set |
 
 ## Operation
 
-1. Partition requirements into independently verifiable vertical slices with one observable outcome per ticket.
-2. Place enabling work before dependent behavior.
-3. Use expand → migrate → contract for wide mechanical changes; keep migrate batches independently valid when possible.
-4. Add an integration ticket when intermediate batches cannot remain valid independently.
-5. Derive dependency edges from actual prerequisites and reject cycles, overlapping write ownership, and hidden shared-state conflicts.
-6. Bind every specification requirement and acceptance ID to at least one ticket.
-7. Bind exact scope, transformation, dependencies, blockers, read/write ownership, `review_surface`, declared `artifact_kinds`, `family_context`, authority source IDs, exact frozen subject, producer, consumer, review kind and required-axis derivation inputs, verification, recovery, resume pointer, and consumer for every ticket. Missing or conflicting Review declarations return `ticket_repartition` or `plan_revision`; Work never infers them.
-8. Resolve ticket-set approval separately from Work-start authorization.
+1. Partition requirements into independently verifiable vertical slices with one observable outcome each.
+2. Put enabling work before dependent behavior. Use expand, migrate, contract for broad mechanical change; add an integration slice when intermediate batches cannot remain valid.
+3. Derive dependency edges from real prerequisites. Reject cycles, overlapping write ownership, and hidden shared-state conflicts.
+4. Bind every requirement and acceptance condition to at least one slice, with transformation, dependencies, read/write ownership, review surface, verification, recovery, and consumer.
+5. Use the Review and Decision reference for any semantic partition or priority choice.
 
-## Invariants
+## Returns
 
-- Tickets cannot redefine the specification.
-- The graph is acyclic and every ticket fits one bounded Work slice.
-- No requirement, acceptance criterion, or write set is unowned.
-- Every generated ticket preserves the complete Review declaration set from the approved specification; missing or conflicting declarations fail closed through `ticket_repartition` or `plan_revision`, and downstream Work never infers them.
-
-## Recovery
-
-- Oversized tickets split; incomplete vertical behavior returns `ticket_repartition`.
-- Specification conflict returns `plan_revision`; changed Design meaning returns `design_reopened`.
-- Retry requires a changed partition, dependency, or governing specification.
-
-## Completion
-
-Complete only when requirement coverage is exhaustive, the DAG and frontier validate, every slice contract is complete, and one Plan consumer is named.
+| Result | Consumer |
+|---|---|
+| Candidate ticket set | [Plan](../plan.md) approval and [Work](../work.md) handoff |
+| Incomplete or oversized slice | This module for repartition |
+| Specification conflict | [To-Spec](to-spec.md) or [Design](../design.md) |
+| Semantic choice | [Review](review.md), then [Decision](decision.md) |

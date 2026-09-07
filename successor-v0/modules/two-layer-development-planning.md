@@ -1,43 +1,39 @@
-# Two-layer development planning
+# Two-Layer Development Planning
 
-## Contract
+## Trigger and boundary
 
-| Field | Binding |
+Run when a consequential Design or Plan workflow spans multiple operations, branches, sessions, artifacts, or actors. A user naming the module is sufficient. It creates a candidate planning representation; it does not authorize work or make semantic decisions.
+
+## Paired-view structure
+
+| View | Required content |
 |---|---|
-| `contract_version` | `devskill.module.v0.2` |
-| Envelope | input and output each carry `runtime.module-envelope.v0.1` |
-| Prerequisites | trigger matched; complete current input/envelope, authority, runtime file, producer, and consumer admitted |
-| Trigger | consequential Design or Plan workflow/authority structure spans multiple operations, branches, sessions, artifacts, or actors |
-| Input | `design.decision-resolution.v0.1` or `plan.graph.v0.1`, carrying resolved/unresolved bindings, constraints, owners, workflow decisions, producer, and consumer |
-| Output | matching `design.paired-view-binding.v0.1` or `plan.paired-view-binding.v0.1`: Workflow Evolution View, Structure and Authority View, shared IDs, consistency result, unresolved transfers/conflicts, status, consumer |
-| Authority | candidate human-facing design structure only |
-| Failure | `cross_view_blocked` |
-| Consumer | Design packet compiler or Plan specification compiler, matching the input variant |
+| Workflow Evolution | Entry conditions, operations, branches, recovery, terminals, consumers, and truthful status |
+| Structure and Authority | Step, semantic input, representation, source, operation actor, output, validator or decision actor, next consumer, authority gained, and authority not gained |
+
+The views share the same consequential steps. A helper appears only when it affects a public seam, authority boundary, handoff, or independently testable outcome. The paired view is planning material, not a replacement for accepted decisions, specifications, tests, or project state.
+
+The caller supplies any durable planning location. This module returns the paired candidate and does not create a planning record on its own.
+
+## Runtime references
+
+| When | Load | Return or use |
+|---|---|---|
+| Design or Plan needs a consequential paired representation | [Design](../design.md) or [Plan](../plan.md) | Paired candidate to the owning stage |
+| A paired-view result contains a semantic choice | [Review](review.md), then [Decision](decision.md) | Findings and semantic disposition to the owning stage |
 
 ## Operation
 
-1. Select the Design or Plan contract variant from the admitted input; never convert one variant into the other implicitly.
-2. Build the smallest complete Workflow Evolution View with entries, operations, branches, retries, checkpoints, recovery, terminals, consumers, and truthful status.
-3. For every consequential step or transfer, add a Structure and Authority row with stable ID/status, semantic input, representation, source, operation actor, output, validator/decision actor, consumer, authority gained, and authority not gained.
-4. Exclude helpers that affect no public seam, authority boundary, handoff, or independently testable outcome.
-5. Validate every workflow edge against one structure row and detect missing inputs, undefined outputs, cycles, wrong actors, unjustified authority, and unusable consumer inputs.
-6. Apply accepted decisions and review corrections to both views in the same revision.
-7. Block the matching packet or specification compiler on any cross-view mismatch.
+1. Build the smallest Workflow Evolution view: entries, operations, branches, recovery, terminals, and consumers.
+2. For each consequential step, add a Structure and Authority view: input, representation, source, actor, output, validator or decision actor, consumer, authority gained, and authority not gained.
+3. Exclude helpers that affect no public seam, authority boundary, handoff, or independently testable outcome.
+4. Check that every consequential workflow edge has a matching structure row and every row has a usable consumer.
+5. Return mismatches to the owner. Use the Review and Decision reference for any semantic choice.
 
-## Invariants
+## Returns
 
-- Shared steps and transitions use identical stable IDs in both views.
-- Every branch reaches a consumer, typed block, recovery route, human gate, or terminal.
-- Every consequential arrow transfers one named bounded structure.
-- Proposal, validation, confirmation, acceptance, publication, planning approval, mutation, and execution authorization remain distinct.
-- Candidate, approved-unimplemented, implemented, and historical states remain distinct.
-
-## Recovery
-
-- Cross-view mismatch returns `cross_view_blocked`; missing consumer or authority reopens the owning Design or Plan item.
-- A cycle reports its minimal members and reopens their owners.
-- Changed accepted input creates successor lineage and invalidates only affected nodes.
-
-## Completion
-
-Complete only when all consequential workflow elements have matching structure-and-authority rows, shared IDs and transitions validate, authority effects are explicit, and one consumer matching the admitted Design or Plan variant is bound.
+| Result | Consumer |
+|---|---|
+| Consistent paired view | [Design](../design.md) or [Plan](../plan.md) |
+| Cross-view mismatch | Owning [Design](../design.md) or [Plan](../plan.md) item |
+| Semantic choice | [Review](review.md), then [Decision](decision.md) |

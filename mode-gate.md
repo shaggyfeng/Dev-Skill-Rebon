@@ -2,15 +2,16 @@
 
 ## Contract
 
-| Field | Binding |
-|---|---|
-| `contract_version` | `devskill.module.v0.2` |
-| Envelope | input and output each carry `runtime.module-envelope.v0.1` |
-| Envelope fields | `contract_version`, `task_id`, `scope_digest`, `input_digest`, `output_digest`, `producer`, `consumer`, `authority`, `status`, `failure_route`, `retry_budget` |
-| Input | `route.mode-evidence.v0.1` |
-| Output | `development-execution-profile.v0.1` |
-| Status | `complete`, `blocked`, `reopen`, or `invalidated` |
-| Failure | `mode_not_admitted` when capability or required identity is missing |
+Mode Gate alone owns provider and host evidence, suggested mode and host, human confirmation, governance, roadmap intent, capability validation, admission, and mode re-entry. Missing required evidence or capability returns `mode_not_admitted` before task work.
+
+## Runtime references
+
+| When | Load | Return or use |
+|---|---|---|
+| The selected host is `rebon` and native capability must validate | [Rebon host adapter](successor-v0/modules/rebon-host-adapter.md) | Native capability confirmation for admission or `mode_not_admitted` |
+| Admission confirms an optimized mode | [Context Optimization](successor-v0/modules/context-optimization.md) | Context-fit operation after admission; it never decides the mode |
+| Admission completes | [Route](successor-v0/stage-0-route.md) | One family, overlay, or Route terminal from the admitted profile |
+| An admitted governance problem changes design meaning, authority, or scope | [Grilling](successor-v0/modules/grilling.md) | Accepted rule or next question under the selected governance profile |
 
 ## Inputs
 
@@ -18,7 +19,7 @@ Read trusted provider and host capability metadata without asking a provider que
 
 ## Evidence-based suggestion
 
-`route.mode-evidence.v0.1` binds trusted host/session metadata, the named adapter's documented environment-variable names and host configuration/probe results, normalized host and provider kinds, subagent availability, context capacity, workload request, display support, redacted evidence-source identifiers, contradictions, and a typed suggested mode/host. It never carries secret values, tokens, cookies, credentials, or full secret-bearing URLs.
+Use trusted host or session metadata, then the named adapter configuration and documented environment variables. Establish provider, host, usable subagents, context capacity, workload, and display support without exposing secret values.
 
 ### Evidence precedence and operation
 
@@ -26,60 +27,39 @@ Read trusted provider and host capability metadata without asking a provider que
 2. If a field remains unresolved, inspect only the named adapter's documented environment-variable names and host configuration or adapter probe. Do not enumerate arbitrary environment variables or infer locality from a model name, URL shape, or speed.
 3. Normalize evidence into provider kind, host kind, usable subagents, context capacity, workload request, and display support. Record evidence sources and classifications, not secret contents.
 4. Compile at most one suggested mode and one suggested host with the supporting capability evidence. Conflicting evidence fails closed; do not merge profiles.
-5. When continuation activates governance, resolve the applicable governance profile before applying any suggestion. Under current explicitly selected `lead_ungoverned`, apply one valid evidence-supported suggestion without asking. Under `pair`, `governance_unresolved`, or ordinary governed execution, preserve human choice and require the human to select or confirm from the four modes.
+5. Present one evidence-supported host and mode suggestion for human confirmation before mode selection. Governance never bypasses this confirmation.
 6. Missing capability evidence, unresolved provider/session identity, or a conflicting suggestion returns the existing typed unresolved/admission failure. Never invent a suggestion or capability proof.
 
 Provider discovery authorizes DevSkill routing only; it does not grant project-runtime authority, approval, publication, or human decision power.
 
 ## Delegated profile
 
-A delegated task may consume a parent-emitted `development-execution-profile.v0.1` only when its provider/host capability evidence is trusted, `route_status=admitted`, and `{task_id, scope_digest, mode, host, roadmap_checkbox_update, review_route, consumer}` match the dispatch. The successful parent dispatch is the capability evidence for `subagents=yes`. The delegated task does not rerun mode selection or test its own nested-subagent capability. A missing, stale, or mismatched inherited profile returns `mode_not_admitted` to the parent.
+A delegated task inherits its parent's admitted host, mode, and relevant task boundary. It does not rerun mode selection or prove nested subagent capacity. A changed host, mode, scope, or consumer returns to Mode Gate.
 
 ## Admission order
 
 1. Validate trusted provider/host capability evidence in a supplied inherited profile; when its delegated-task bindings match, reuse it and emit the admitted profile.
 2. Without a valid inherited profile, read provider metadata and capability evidence before asking for mode, host, or roadmap intent.
-3. Normalize the evidence and compile any typed suggestion before mode selection; do not apply it until the applicable governance profile is known.
-4. If governance is `lead_ungoverned` and exactly one valid evidence-supported suggestion exists, apply that one suggestion. If evidence is unresolved, insufficient, or conflicting, return the typed unresolved/admission failure instead. Otherwise announce any valid candidate and request confirmation; if it is not confirmed, present the four mode choices.
-5. Resolve the mode from confirmation or the selected four-choice value; do not auto-correct an unconfirmed value.
-6. Resolve host after mode selection.
-7. Resolve `roadmap_checkbox_update` after host selection and before implementation.
-8. Validate the selected mode against provider, host, subagent, planning-tool, structured-output, and handoff capabilities.
-9. Emit the admitted profile once all fields and `route_status=admitted` are valid.
+3. Normalize the evidence and compile one suggested host and mode.
+4. Ask the human to confirm the suggestion. If the human declines or evidence is unresolved, ask mode first from the four choices, then host. Do not inspect provider evidence again.
+5. Resolve `roadmap_checkbox_update` after host selection and before implementation; resolve governance only when the user names or accepts roadmap or session-goal continuation.
+6. Derive the review route from the task and roadmap or merge intent.
+7. Validate the selected mode against its applicable provider, host, subagent, planning-tool, structured-output, and handoff capabilities.
+8. Announce the admitted host, provider, mode, subagent use, Context Optimization use, roadmap intent, and review route once. Use the matching Runtime reference after admission.
 
 ## Admission representation
 
-The mode-admission relation is one ordered, fail-closed representation:
-
 ```text
-provider_evidence_bound
- -> suggestion_compiled | mode_not_admitted
-suggestion_compiled
- -> governance_resolved | mode_not_admitted
-governance_resolved
- -> mode_selected | mode_not_admitted
-mode_selected
- -> host_selected | mode_not_admitted
-host_selected
- -> roadmap_intent_bound | mode_not_admitted
-roadmap_intent_bound
- -> capability_validated | mode_not_admitted
-capability_validated
- -> admitted | mode_not_admitted
+trusted evidence
+  -> suggested host and mode
+  -> confirmed suggestion | explicit mode choice
+  -> host choice when required
+  -> roadmap or governance choice when relevant
+  -> capability validation
+  -> admitted | mode_not_admitted
 ```
 
-| State | Required representation | Success binding |
-|---|---|---|
-| `provider_evidence_bound` | trusted provider/session metadata, named-adapter evidence, normalized provider and host kinds, and redacted evidence sources | one evidence-backed suggestion candidate or a typed unresolved/admission failure |
-| `suggestion_compiled` | at most one suggested mode and one suggested host with supporting capability evidence and no contradictions | governance resolution before suggestion application |
-| `governance_resolved` | `lead_ungoverned`, `pair`, or `governance_unresolved` with its continuation rule | confirmed or explicitly selected mode from the four canonical choices |
-| `mode_selected` | exactly one of `parallel-normal`, `parallel-optimized`, `sequential-normal`, or `sequential-optimized` | host resolution |
-| `host_selected` | trusted `rebon` or `non-rebon` identity, or one answered host question | roadmap-checkbox and review intent resolution |
-| `roadmap_intent_bound` | `roadmap_checkbox_update`, `merge_pr_review`, and `review_route` | selected-mode capability validation |
-| `capability_validated` | provider, host, execution, subagent, planning-tool, structured-output, durable-handoff, and task-specific capability checks applicable to the selected mode | `development-execution-profile.v0.1` with `route_status=admitted` |
-| `admitted` | `{host, provider, mode, subagents, context_optimization, roadmap_checkbox_update, merge_pr_review, review_route, governance_profile, route_status}` and the shared envelope | Route task-specific work may begin |
-
-Any missing, stale, contradictory, or mismatched binding returns `mode_not_admitted` or the existing typed unresolved/admission failure; no state silently advances and no fifth mode is introduced.
+No state silently advances. Conflicting evidence, unresolved identity, missing required capability, or an invalid host-mode pairing returns `mode_not_admitted` and asks only for the missing decision.
 
 ## Mode selection
 
@@ -92,9 +72,9 @@ Show exactly these four choices:
 | `sequential-normal` | one task at a time | normal context | sequential execution |
 | `sequential-optimized` | one task at a time | optimized context and handoff | planning tools and durable handoff |
 
-The selected value is the execution mode. Do not add a fifth choice, wizard, or automatic correction. Provider evidence may produce a candidate mode, but the candidate is not admitted until confirmed or explicitly selected.
+The selected value is the execution mode. Provider evidence may suggest one, but it is not admitted until confirmed or selected. `Not sure, help me narrowing it down.` is a decision-support choice, not a fifth mode: ask one mode-fitting question at a time and retain the same choice until a mode is selected.
 
-All four modes use the shared deterministic read-admission contract in `SKILL.md` before model content reads. `parallel-normal` and `parallel-optimized` partition oversized targets into persisted evidence tasks before synthesis. `sequential-normal` and `sequential-optimized` process one bounded coverage unit at a time and emit a current `runtime.handoff.v0.1` between units. Optimized modes additionally run `optimized.preworkflow`; normal modes do not.
+Context Optimization runs only in the two optimized modes through the Runtime reference. A normal-mode context failure returns here with an optimized mode suggested; it never silently becomes an optimized run.
 
 If a trusted user-authored mode preference exists in agent memory, announce it and present the same four choices for confirmation or override. DevSkill stores no preference. On a persistence request, direct the host to save the confirmed mode outside this package.
 
@@ -109,7 +89,7 @@ If a trusted user-authored mode preference exists in agent memory, announce it a
 
 On missing capability, return `mode_not_admitted`, identify the missing capability, and show the four choices again. Do not silently change the mode.
 
-When deterministic read admission proves that a sequential task requires more than one bounded coverage unit, the selected host must provide an approved location or native mechanism for the read-frontier handoff. Missing handoff persistence returns `mode_not_admitted` for that task; it does not permit an oversized direct read.
+`sequential-optimized` requires a usable continuation location. Missing continuation capability returns `mode_not_admitted`; it does not permit an oversized direct read.
 
 ## Host
 
@@ -137,8 +117,8 @@ Resolve the governance profile only when the user names or accepts roadmap or se
 
 | Answer | Profile | Continuation | Problem handling |
 |---|---|---|---|
-| Yes | `lead_ungoverned` | Continue until every goal explicitly set by the user in the current session is complete; a goal the user sets mid-session enters the scope as it is set | Run grilling with the reviewer, apply the recommended solution automatically, and do not add a user-confirmation stop |
-| No | `pair` | Do not enable ungoverned continuation | Run grilling with the reviewer and user; a blocker that changes design meaning, authority, or scope, or crosses a permission boundary, pauses for the user's decision; a mechanical blocker is fixed and reported without stopping |
+| Yes | `lead_ungoverned` | Continue until every goal explicitly set by the user in the current session is complete; a goal the user sets mid-session enters the scope as it is set | Use the Grilling reference with the reviewer, apply the recommended solution automatically, and do not add a user-confirmation stop |
+| No | `pair` | Do not enable ungoverned continuation | Use the Grilling reference with the reviewer and user; a blocker that changes design meaning, authority, or scope, or crosses a permission boundary, pauses for the user's decision; a mechanical blocker is fixed and reported without stopping |
 | Unclear | `governance_unresolved` | Do not enable ungoverned continuation; the session proceeds governed | Ask one bounded follow-up that restates that lead applies recommended fixes without stopping and pair pauses for decisions, and request an explicit lead or pair; never infer a profile |
 
 Under `pair`, classify each blocker by its nature as it arises; never defer classification or batch decisions.
@@ -153,15 +133,9 @@ Announce the selected profile once — with the admitted profile when governance
 
 ## Admission result
 
-Admission is complete only when these fields are present:
+Admission requires resolved host, provider, mode, capability fit, and review route. It also requires a roadmap answer before implementation and a governance answer only for session or roadmap continuation. `route_status=admitted` is required before repository work.
 
-`{host, provider, mode, subagents, context_optimization, roadmap_checkbox_update, merge_pr_review, review_route, governance_profile, route_status}`
-
-`route_status` must be `admitted` before repository work. `provider=unknown` is allowed only in a pre-admission evidence record; an admitted profile requires resolved provider/session identity. Unresolved provider identity, conflicting evidence, or an invalid suggestion returns the typed unresolved/admission failure and cannot reach `route_status=admitted`. `governance_profile` is admitted as `unresolved`; it persists in the profile once resolved — `lead_ungoverned`, `pair`, or `governance_unresolved` — is announced once at resolution, revalidates at re-entry, and a changed profile invalidates the profile and reruns admission order.
-
-Show the admitted host, provider, mode, subagent use, context optimization, roadmap-checkbox intent, and review route once.
-
-When `host == rebon`, `route_status` remains non-admitted until `successor-v0/modules/rebon-host-adapter.md` admits the selected mode's native tool profile.
+When the host is Rebon, admission also requires the Rebon adapter to confirm the selected native tool path.
 
 ## Recovery
 
