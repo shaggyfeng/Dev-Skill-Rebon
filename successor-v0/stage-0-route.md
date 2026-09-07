@@ -6,7 +6,7 @@
 |---|---|
 | `family_id` | `route` |
 | `stage` | `0` |
-| `input` | current request, active-stage state, admitted profile, optional current table/projection/registry state, optional lifecycle sidecar |
+| `input` | current request, active-stage state, `route.mode-evidence.v0.1`, admitted `development-execution-profile.v0.1`, optional current table/projection/registry state, optional lifecycle sidecar |
 | `output` | one Route terminal, including an overlay return when selected |
 | `authority` | classification, bounded attention, and handoff only |
 | `consumer` | active family, overlay consumer, clarification, or `live_fallback` |
@@ -18,7 +18,7 @@ Run this family for every engineering request.
 | Condition | Module | Result |
 |---|---|---|
 | Explicit stage request and prerequisites valid | `route.vibe` | requested stage candidate |
-| Applicable family signal from `SKILL.md` and entry prerequisites valid | `route.vibe` | family stage candidate |
+| Applicable family signal with a current valid intake result | `route.vibe` | family stage candidate |
 | Design grilling request or `design.grill-round.v0.1` | `deep-decision-review` | `review_context=grill_infrastructure`, `review_kind=grill` |
 | Roadmap checklist closure | `stage-0.review` | `review_kind=checklist_close` |
 | Merge-PR review | `stage-0.review` | `review_kind=checklist_close` |
@@ -35,7 +35,11 @@ Run this family for every engineering request.
 | Valid table replacement | `stage-0.vibe-projection.compile` | projection replacement and frozen return binding |
 | Applicable unsuppressed failure signal | `route.attention` | bounded findings |
 | Active stage and no applicable signal | `route.vibe` | active-stage continuation |
-| No active stage, no direct overlay, and no eligible family signal | `route.intake` | bounded classification or clarification |
+| No active stage and no direct overlay, regardless of any family signal | `route.intake` | bounded three-fact intake and artifact-touch classification |
+| Brownfield artifact-touch evidence | `route.intake` | maintenance map and lazy convention packet |
+| Explicit research request or family evidence request | `research` | portable evidence packet |
+| Explicit temporary human-action request | `manual-procedure` | ordered action/result packet |
+| Explicit teaching, learning, practice, or competence-building request | `teaching` | mission and demonstration packet |
 | Invalid supplied table, registry, or projection | `live_fallback` | preserve last valid live router |
 
 All compatible non-review overlays run in dependency order. At most one typed review overlay is admitted per operation. Success signals do not activate Attention. Attention requires an applicable failure signal and a valid registry composition.
@@ -43,17 +47,22 @@ All compatible non-review overlays run in dependency order. At most one typed re
 Review trigger precedence is exclusive for one operation: `design.grill-round.v0.1` or explicit grilling selects `deep-decision-review` with `review_kind=grill`; roadmap-checklist and merge-PR intent select `stage-0.review` with `review_kind=checklist_close`; runtime/instructional implementation selects `stage-0.review` with `review_kind=implementation_logic`; another explicit review request must classify as `implementation_logic` or `checklist_close` before dispatch, otherwise return `clarification_required`. A specialized review trigger suppresses the generic review trigger for that operation.
 
 
+## Mode admission binding
+
+Before any Route task-specific operation, invoke `route.mode-activation` through `mode-gate.md` with the current provider/host evidence and consume only a `development-execution-profile.v0.1` whose `{host, provider, mode, subagents, context_optimization, roadmap_checkbox_update, merge_pr_review, review_route, governance_profile, route_status}` are current and whose `route_status=admitted`. `mode-gate.md` is the sole owner of provider evidence, suggestion, governance, mode, host, roadmap-intent, capability validation, and mode failure semantics; Route owns only the admission ordering and task handoff. Missing, stale, conflicting, or mismatched mode bindings return `mode_not_admitted` or the existing typed unresolved/admission failure and do not begin Route work.
+
 ## Operation
 
 1. Freeze the operation scope as the first ordered action: bind `operation_id`, task scope, current stage, request, table/projection/registry state, optional lifecycle sidecar, and admitted profile, and record the frozen-scope digest; the route-spec state is read once, at this freeze. All later routing consumes the frozen scope without refreezing.
-2. In an optimized mode, validate and load the `optimized.preworkflow` row and complete it before the Route task's first task-specific operation. A separately dispatched overlay has its own `task_id` and preworkflow.
-3. Evaluate every registry trigger.
+2. When the frozen Route operation or overlay requires repository or document content, compile the shared `runtime.read-plan.v0.1` with deterministic listing, search, metadata, and counts before content reading. Partition an oversized or uncertain surface before dispatch. In an optimized mode, pass that plan into the `optimized.preworkflow` row and complete it before the Route task's first task-specific operation. In a normal mode, use it for family-owned bounded reading. A separately dispatched overlay has its own `task_id`, read plan when applicable, and optimized preworkflow when selected.
+3. Apply trigger precedence. When no stage is active and no direct overlay is selected, admit `route.intake` exclusively; do not admit a family signal in the same operation. Otherwise evaluate the applicable direct overlay or active-stage signal. A family signal is eligible only with a current valid intake result.
 4. Validate the selected row's prerequisites, versioned input, authority ceiling, module file, failure route, and consumer. A module name alone does not admit execution.
 5. Load the selected runtime module after admission and before module execution; execute `family-local` rows under this controller only.
 6. If supplied table, registry, or projection state is invalid, preserve the last valid live router and return `live_fallback`.
-7. When no direct overlay, no active stage, and no family signal exists, run `route.intake` once to classify the bounded engineering intent from the request and current repository authority. If the result is a greenfield decision or value gap requiring untangling, compile `design.decision-review-input.v0.1` with `review_context=intake`, load `successor-v0/modules/deep-decision-review.md`, and return its findings to Route intake or the human before a Design entry. Retain the `route.intake-result.v0.1` and `design.review-round.v0.1`; only Route may construct a Design entry after both current typed results validate. The reviewer cannot emit that handoff; unresolved intent returns clarification.
+7. When `route.intake` is selected, run it once to classify the bounded engineering intent from the request and current repository authority. Discover conventions before artifact exploration; retain the `route.intake-result.v0.1`, any required maintenance map, and the convention packet. If the result is a greenfield decision or value gap requiring untangling, explicitly bind `review_context=intake`, `review_kind=implementation_logic`, `review_surface`, declared `artifact_kinds`, `family_context`, authority source IDs, and the exact frozen subject in `design.decision-review-input.v0.1`; any missing or conflicting declaration returns `clarification_required`. Load `successor-v0/modules/deep-decision-review.md`, and return its findings to Route intake or the human before a Design entry. Only Route may construct a Design entry after both current typed results validate. A valid intake result that selects already-specified work may produce the Plan route candidate on the next Route operation; unresolved intent returns clarification.
+
 8. Apply an eligible lifecycle table replacement, then projection compilation, before returning to its frozen lifecycle consumer.
-9. For `work.diagnose` and `prototype`, validate the Work or Design prerequisite before loading the module; if absent, do not activate the module and return `clarification_required`. Compose all other compatible explicit overlays in dependency order; unresolved consumer conflicts return clarification.
+9. For `work.diagnose` and `prototype`, validate the Work or Design prerequisite before loading the module; for `research`, `manual-procedure`, and `teaching`, validate their direct Route trigger and typed input before loading the module. If a prerequisite is absent, do not activate the module and return `clarification_required`. Compose all other compatible explicit overlays in dependency order; unresolved consumer conflicts return clarification.
 10. Evaluate the current-stage signal. When `route.attention` is applicable, perform exactly one ordered Attention composition against one frozen scope:
 
     ```text
@@ -73,14 +82,17 @@ Review trigger precedence is exclusive for one operation: `design.grill-round.v0
 
 | Module | Load binding |
 |---|---|
-| `route.mode-activation` | Use `mode-gate.md` during admission before Route task work. |
+| `route.mode-activation` | Use `mode-gate.md` during admission before Route task work; consume its complete mode-admission representation and do not begin task-specific routing until `route_status=admitted`. |
 | `stage-0.think` | Load `successor-v0/modules/stage-0-think.md` only after its explicit structural trigger or admitted structural-slop finding and `think.input.v0.1` validate. |
 | `stage-0.write` | Load `successor-v0/modules/stage-0-write.md` only after bound meaning, stable semantic IDs, authority labels, consumer, and `write.input.v0.1` validate; the unbound-output trigger row admits with only the envelope, authority, and consumer validated, and the packet fields declared absent. |
 | `markdown-tables-and-diagrams` | Load `successor-v0/modules/markdown-tables-and-diagrams.md` from `stage-0.write` only when a Markdown table or Mermaid diagram is selected or repaired. |
 | `talk-like-king` | Load `successor-v0/modules/talk-like-king.md` when the output is long human-facing prose — a README, documentation, essays, announcements, any long-form writing for human readers — or user chat; run its voice acquisition before drafting. |
-| `stage-0.review` | Load `successor-v0/modules/review.md` only after a typed `review.request.v0.1` and its frozen subject, profile, producer, and consumer validate; apply the `review_kind` topology for implementation, checklist, and merge-PR review. |
+| `stage-0.review` | Load `successor-v0/modules/review.md` only after a typed `review.request.v0.1` and its frozen subject, `review_surface`, artifact declarations, profile, producer, and consumer validate; apply the `review_kind` topology for implementation, checklist, and merge-PR review. |
 | `work.diagnose` | Load `successor-v0/modules/diagnosing-bugs.md` only after a valid Work entry, frozen symptom, bounded environment, and `work.diagnosis-request.v0.1` validate. |
 | `prototype` | Load `successor-v0/modules/prototype.md` only after a valid Design frontier, one falsifiable question, and `design.prototype-question.v0.1` validate. |
+| `research` | Load `successor-v0/modules/research.md` only after an explicit research or family evidence trigger, bounded question, mutable-seam declaration, and `research.request.v0.1` validate. |
+| `manual-procedure` | Load `successor-v0/modules/manual-procedure.md` only after a temporary human-action trigger, ordered-stage scope, secrecy classification, and `manual-procedure.request.v0.1` validate. |
+| `teaching` | Load `successor-v0/modules/teaching.md` only after an explicit teaching, learning, practice, or competence-building request, one mission, observable demonstration, and `teaching.request.v0.1` validate. |
 | `optimized.preworkflow` | Load `successor-v0/modules/optimized-preworkflow.md` only in an admitted optimized mode and complete it before the Route task's first task-specific operation. |
 | `deep-decision-review` | Load `successor-v0/modules/deep-decision-review.md` for grilling, Route-intake untangling, or an admitted Design decision only after `design.grill-round.v0.1` or `design.decision-review-input.v0.1` and its `review_context` validate; return findings only to its bound consumer. |
 
@@ -127,16 +139,31 @@ Empty match set: the ordered chain completes over empty collections; no findings
 
 The trigger row "Applicable unsuppressed failure signal" is admitted at signal level; the composition's match and suppression outcome verifies "applicable unsuppressed". The module is invoked only when the admitted set is non-empty. The compiler resolves exactly one terminal by fixed precedence: `live_fallback` for any invalid supplied state; `clarification_required` for missing prerequisites or conflicting consumers; `overlay_return` for valid typed overlay results; `attention_findings` only when a findings artifact exists; `stage_handoff` for an explicit stage request with validated prerequisites; `active_stage_continuation` as the default. An overlay's subject was frozen at admission, so its results return before anything else claims the operation; a findings artifact outranks a stage handoff, which is honored only when nothing else claims the operation. Every terminal carries the Route decision record.
 
+## Intake and repository discovery
+
+`route.intake-request.v0.1` binds `task_id`, `scope_digest`, the problem in the user's words, repository/workspace resources inspected by the agent, blast-radius sense across repositories, workspaces, and existing artifacts, active-stage state, direct-overlay state, producer, and consumer. When the intake result requires deep review, its typed review input also binds `review_context=intake`, `review_kind=implementation_logic`, explicit `review_surface`, declared `artifact_kinds`, `family_context`, authority source IDs, and the exact frozen subject; these fields are not inferred from a file extension or unstated intent. It never re-intakes an active stage or performs the selected handler's work.
+
+### Ordered intake
+
+1. Ask conversationally for exactly three facts: the problem in the user's words, the resources already available in the repository or workspace, and the blast-radius sense. Inspect the resources; do not ask the user to inventory them.
+2. Discover conventions lazily in one task-scoped `route.repository-convention-packet.v0.1` before repository exploration: read applicable root or per-context agent instructions such as `AGENTS.md`, `CLAUDE.md`, or `CONTRIBUTING.md`, relevant `CONTEXT.md`/`CONTEXT-MAP.md`, and ADRs. Use established glossary terms and surface ADR conflicts. Missing convention files are silent and do not create setup work, tracker configuration, labels, or instruction files.
+3. Perform one bounded artifact-touch check over the relevant repository/workspace surface. An existing implementation, adjacent behavior, rendering, record, or prior attempt means `brownfield`; no such artifact means `greenfield`; ambiguous evidence returns one focused clarification and never guesses.
+4. For `brownfield`, carry the intake packet into one ephemeral `route.maintenance-map.v0.1` containing each related artifact's location, condition (`working`, `partial`, `broken`, `abandoned`, or `superseded`), what must be preserved/extended/worked around, what is replaceable, touching dependencies, and honest ambiguities. This is maintenance surveying, not defect hunting or solution design.
+5. Search by domain concept and read enough to classify condition and relationship under the discovered conventions; route an unresolved value gap to Design or its intake deep review. Route concrete work against known territory to Plan. Greenfield work follows the ordinary Route-to-Design path when meaning is unresolved.
+6. Reuse the convention packet for the current task and return it with the intake result; do not persist the maintenance map or convention packet as durable project state.
+
+The intake result records the artifact-touch classification, maintenance-map disposition, convention-packet digest, unresolved meaning, selected family or overlay, failure route, and next consumer. A greenfield decision or value-gap review input records explicit `review_surface`, declared `artifact_kinds`, `family_context`, authority source IDs, and the exact frozen subject. Route may construct a Design entry only after any required intake review result is current; Route may emit a Plan handoff only for already-specified work. A Design or Plan entry for `brownfield` must preserve the current maintenance-map and convention-packet digests.
+
 ## Review overlay
 
-`stage-0.review` receives a frozen subject, review profile, candidate digest, producer contract, and consumer contract. It returns findings, or a checklist verdict for `review_kind=checklist_close`. Use `successor-v0/modules/review.md`.
+`stage-0.review` receives a frozen subject, review profile, `review_surface`, declared `artifact_kinds`, `family_context`, authority source IDs, candidate digest, producer contract, and consumer contract. It returns findings, or a checklist verdict for `review_kind=checklist_close`. Use `successor-v0/modules/review.md`.
 
 ## Decision table
 
 | State | Trigger | Transition |
 |---|---|---|
-| `initializing` | valid family signal and prerequisites | `route_compilation` |
-| `initializing` | no eligible family signal | `intake_classification` |
+| `initializing` | valid family signal without a current intake result | `intake_classification` |
+| `initializing` | explicit stage or direct overlay and prerequisites | `route_compilation` |
 | `steady` | active stage and no signal | `active_stage_continuation` |
 | `direct_entry` | explicit stage, review, unslop, diagnosis, or prototype request | named overlay or stage validation |
 | `review_overlay` | typed review request admitted | `overlay_return` |
@@ -145,8 +172,8 @@ The trigger row "Applicable unsuppressed failure signal" is admitted at signal l
 | `attention_running` | bounded composition complete | `route_compilation` |
 | `route_compilation` | one legal consumer | named handoff |
 | `route_compilation` | missing prerequisite or conflicting consumer | `clarification_required` |
-| `intake_classification` | one eligible family signal | `route_compilation` |
-| `intake_classification` | greenfield decision or value gap requires untangling | `intake_deep_review` |
+| `intake_classification` | one eligible family signal with a current intake result | `route_compilation` |
+| `intake_classification` | greenfield decision or value gap requires untangling and explicit review declarations validate | `intake_deep_review` |
 | `intake_deep_review` | `route.intake-result.v0.1` and `design.review-round.v0.1` validate | `route_compilation` |
 | `intake_deep_review` | findings returned to Route intake or human but a typed result is missing or stale | `clarification_required` |
 | `intake_deep_review` | `review_not_admitted` or `review_axis_blocked` | `clarification_required` |
@@ -164,17 +191,20 @@ The trigger row "Applicable unsuppressed failure signal" is admitted at signal l
 |---|---|---|---|---|---|---|
 | `route.vibe` | `route.vibe-input.v0.1` | `route.vibe-result.v0.1` | Route controller; signal classification only | `family-local` | `route_classification_blocked` | overlays, Attention, or Route compiler |
 | `route.attention` | `route.attention-input.v0.1` | `route.attention-findings.v0.1` | Route controller; evidence allocation and findings only | `family-local` | `attention_blocked` | Route compiler |
-| `route.intake` | `route.intake-request.v0.1` with no active stage and no direct overlay | `route.intake-result.v0.1` | Route controller; bounded engineering classification only | `family-local` | `intake_clarification_required` | Route compiler or clarification |
-| `route.mode-activation` | `route.mode-evidence.v0.1` | `development-execution-profile.v0.1` | Mode gate; mode classification only | `mode-gate.md` | `mode_not_admitted` | exact current Route task |
-| `stage-0.think` | `think.input.v0.1` | `think.brief.v0.1` | Structural thinker; candidate representation only | `successor-v0/modules/stage-0-think.md` | `structural_gap` or `structural_authority_conflict` | active family, review overlay, or `stage-0.write` |
+| `route.intake` | `route.intake-request.v0.1` with no active stage and no direct overlay | `route.intake-result.v0.1` plus `route.maintenance-map.v0.1` and `route.repository-convention-packet.v0.1` when applicable, and `design.decision-review-input.v0.1` with explicit intake review declarations when a greenfield decision or value gap requires deep review | Route controller; bounded engineering classification only | `family-local` | `clarification_required` | Route compiler, Design, Plan, or clarification |
+| `route.mode-activation` | `route.mode-evidence.v0.1` with trusted provider/host evidence, governance and intent fields, and current capability evidence | `development-execution-profile.v0.1` with the four-mode selection and `route_status=admitted` only after host, roadmap intent, review route, governance, and capability validation | Mode gate; mode classification only | `mode-gate.md` | `mode_not_admitted` or the typed unresolved/admission failure | exact current Route task |
+| `stage-0.think` | `think.input.v0.1` | `think.brief.v0.1` | Structural thinker; candidate representation only | `successor-v0/modules/stage-0-think.md` | `structural_gap`, `structural_authority_conflict`, or `structural_invalidated` | active family, review overlay, or `stage-0.write` |
 | `stage-0.write` | `write.input.v0.1` | `write.candidate.v0.1` | Writer; presentation only | `successor-v0/modules/stage-0-write.md` | `write_not_admitted` or `write_semantic_delta` | active family or review overlay |
 | `markdown-tables-and-diagrams` | `render.input.v0.1` | `render.candidate.v0.1` | Renderer; presentation structure only | `successor-v0/modules/markdown-tables-and-diagrams.md` | `render_not_admitted` or `render_source_conflict` | `stage-0.write` or originating family |
 | `stage-0.review` | `review.request.v0.1` | `review.result.v0.1` | Reviewer; findings or checklist verdict only | `successor-v0/modules/review.md` | `review_not_admitted` or `review_axis_blocked` | originating family, Route overlay/requester, or checklist owner |
 | `work.diagnose` | `work.diagnosis-request.v0.1` | `work.diagnosis-result.v0.1` | Diagnosis module; reproduction, read-only inspection, and temporary instrumentation only | `successor-v0/modules/diagnosing-bugs.md` | `diagnosis_blocked` or `diagnosis_environment_required` | `work.execution`, Work recovery, or architecture survey |
-| `prototype` | `design.prototype-question.v0.1` | `design.prototype-evidence.v0.1` | Prototype module; bounded non-production evidence only | `successor-v0/modules/prototype.md` | `prototype_blocked` | grilling or human decision resolution |
+| `prototype` | `design.prototype-question.v0.1` | `design.prototype-evidence.v0.1` | Prototype module; bounded non-production evidence only | `successor-v0/modules/prototype.md` | `prototype_blocked` or `prototype_invalidated` | grilling or human decision resolution |
+| `research` | `research.request.v0.1` | `research.evidence.v0.1` | Research module; sourced evidence only | `successor-v0/modules/research.md` | `research_blocked`, `research_invalidated`, or `research_no_match` | originating family, Route, Write on request, or Handoff |
+| `manual-procedure` | `manual-procedure.request.v0.1` | `manual-procedure.packet.v0.1` | Manual Procedure module; temporary human-action guidance and typed retention handoff only; no durable write | `successor-v0/modules/manual-procedure.md` | `manual_procedure_blocked` or `manual_procedure_invalidated` | Write, Handoff, or human return |
+| `teaching` | `teaching.request.v0.1` | `teaching.progress.v0.1` | Teaching module; lesson, demonstration, and candidate durable-record handoff only; no durable write | `successor-v0/modules/teaching.md` | `teaching_blocked` or `teaching_invalidated` | human learner, optional durable workspace, or Handoff |
 | `stage-0.attention-table-maintenance` | `attention.lifecycle-mutation-sidecar.v0.1` | `attention.table-replacement.v0.1` plus `attention.lifecycle-return-binding.v0.1` | Exact-path current-table writer only | `family-local` | `table_update_rejected` | projection compiler |
 | `stage-0.vibe-projection.compile` | `attention.table-replacement.v0.1` plus `attention.lifecycle-return-binding.v0.1` | `attention.projection-replacement.v0.1` plus `attention.lifecycle-return-binding.v0.1` | Exact-path deterministic projection writer only | `family-local` | `projection_compile_blocked` | frozen lifecycle terminal consumer |
-| `route.compile` | `route.compile-input.v0.1` | `route.terminal.v0.1` | Route controller; routing only | `family-local` | `intake_clarification_required` or `live_fallback` | named family, overlay consumer, clarification, or `live_fallback` |
+| `route.compile` | `route.compile-input.v0.1` | `route.terminal.v0.1` | Route controller; routing only | `family-local` | `clarification_required` or `live_fallback` | named family, overlay consumer, clarification, or `live_fallback` |
 | `optimized.preworkflow` | `optimized.preworkflow-input.v0.1` | `optimized.applied-plan.v0.1` | Preworkflow roles; read, decompose, review, and apply plan corrections only | `successor-v0/modules/optimized-preworkflow.md` | `preworkflow_not_admitted` | exact current Route or Recovery task |
 | `deep-decision-review` | `design.grill-round.v0.1` or `design.decision-review-input.v0.1` with a valid `review_context` | `design.review-round.v0.1` | Reviewer; findings and candidate corrections only | `successor-v0/modules/deep-decision-review.md` | `review_not_admitted` or `review_axis_blocked` | bound Design, Route-intake, or human consumer; Route compiler only for validated intake results |
 
@@ -186,8 +216,9 @@ The trigger row "Applicable unsuppressed failure signal" is admitted at signal l
 - The match record carries exactly two table digests with the structured route-spec-digest pair; no third digest slot exists; the route-spec state is read once per operation at the scope freeze; Route decision-record values are written at their production stages, never back-filled.
 - Table maintenance and projection compilation preserve the frozen lifecycle consumer and reproduce the sidecar's exact disjoint paths.
 - `attention.lifecycle-mutation-sidecar.v0.1` binds `{origin_family, lifecycle_id, terminal_digest, frozen_return_consumer, current_table_path, projection_path, envelope_digest}`; missing or overlapping paths return `table_update_rejected`.
-- Missing optional attention state does not block ordinary family routing.
-- One-shot review never changes persistent review state; persistent state carries only inside its confirmed scope and ends on disable or scope terminal.
+- Route intake is exclusive whenever no stage is active and no direct overlay is selected; a family signal cannot bypass or run alongside the current intake result.
+- Every Design or Plan entry originating from brownfield intake carries the current artifact-touch classification, maintenance-map digest, and convention-packet digest; downstream handoffs preserve them.
+- Research, Manual Procedure, and Teaching are direct Route-admitted modules with one owner, one consumer contract, and typed failure routes.
 
 ## Recovery
 
@@ -195,9 +226,11 @@ The trigger row "Applicable unsuppressed failure signal" is admitted at signal l
 - Reject invalid table mutations and preserve the current table.
 - Preserve the prior projection when projection compilation fails and return a recovery result.
 - Return unresolved stage intent to one human clarification.
-- Preserve the last valid live router for invalid table, registry, or projection state and return `live_fallback`.
+- Missing or ambiguous artifact-touch evidence returns one focused clarification and never guesses greenfield or brownfield.
+- Missing convention files are silent; convention discovery never creates setup artifacts or persists the task packet.
+- A direct Research, Manual Procedure, or Teaching request is blocked when its typed input, runtime file, authority, or consumer is missing.
+- A structural Think result with `status=invalidated` and `failure_route=structural_invalidated` re-enters Stage 0 before any family consumer; it is never consumed as current.
 
 ## Terminals
 
 `active_stage_continuation`, `stage_handoff`, `overlay_return`, `attention_findings`, `clarification_required`, and `live_fallback` are the only Route terminals.
-

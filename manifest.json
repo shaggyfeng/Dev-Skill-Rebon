@@ -1,7 +1,7 @@
 {
   "schema": "devskill.clean-runtime-manifest.v1",
   "status": "active",
-  "version": "1.2.0",
+  "version": "1.4.1",
   "entrypoint": "SKILL.md",
   "runtime_files": [
     "SKILL.md",
@@ -20,6 +20,9 @@
     "successor-v0/modules/deep-decision-review.md",
     "successor-v0/modules/domain-modeling.md",
     "successor-v0/modules/prototype.md",
+    "successor-v0/modules/research.md",
+    "successor-v0/modules/manual-procedure.md",
+    "successor-v0/modules/teaching.md",
     "successor-v0/modules/two-layer-development-planning.md",
     "successor-v0/modules/codebase-design.md",
     "successor-v0/modules/improve-codebase-architecture.md",

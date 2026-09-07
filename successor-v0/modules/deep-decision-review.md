@@ -8,8 +8,8 @@
 | Envelope | input and output each carry `runtime.module-envelope.v0.1` |
 | Prerequisites | trigger matched; complete current input/envelope, authority, runtime file, producer, consumer, and execution profile admitted |
 | Trigger | frozen grill question/options before a human answer, completed grill answer round, Route intake greenfield decision or value gap, admitted non-code Design decision, or explicitly activated persistent session review |
-| Input | `design.grill-round.v0.1` with `review_context=grill_infrastructure`, `review_kind=grill`, `review_state=one_shot`, and `review_phase=pre_answer` or `post_answer`, or `design.decision-review-input.v0.1` with `review_context=intake`, `design_decision`, or `session_mode`, `review_kind=implementation_logic`, `review_state=one_shot` or `persistent_active` as admitted, frozen digest, exact decision content, authority sources, producer, consumer, and admitted execution mode |
-| Output | `design.review-round.v0.1`: review context, review kind, review state, review phase, dispatch owner, persisted reviewer assignment set with stable assignment IDs, assigned axes, reviewer identity, result digest, and status, impact-first finding, independent Standards and Specification findings, `per_option_findings` with exactly one `{option_id, whats_wrong, why_it_matters, example_scenario, bottom_line_fix}` tuple for every frozen option ID and no extras, candidate fixes/options, remaining gaps, ownership concerns, required corrections, status, consumer |
+| Input | `design.grill-round.v0.1` with `review_context=grill_infrastructure`, `review_kind=grill`, `review_state=one_shot`, and `review_phase=pre_answer` or `post_answer`, or `design.decision-review-input.v0.1` with `review_context=intake`, `design_decision`, or `session_mode`, `review_kind=implementation_logic`, `review_state=one_shot` or `persistent_active` as admitted, frozen digest, exact decision content, `review_surface`, declared `artifact_kinds`, `family_context`, authority sources, producer, consumer, and admitted execution mode; the current `runtime.read-plan.v0.1`, coverage accumulator/frontier, per-unit budgets, source freshness identity, and finite retry budget are bound by reference to `SKILL.md` |
+| Output | `design.review-round.v0.1`: review context, review kind, review state, review phase, dispatch owner, persisted reviewer assignment set with stable assignment IDs, assigned axes, reviewer identity, result digest, and status, impact-first finding, independent Standards and Specification findings, `per_option_findings` with exactly one `{option_id, whats_wrong, why_it_matters, failure_scenario, bottom_line_fix}` tuple for every frozen option ID and no extras, candidate fixes/options, remaining gaps, ownership concerns, required corrections, `read_plan_digest`, `coverage_digest`, remaining read frontier when applicable, status, consumer |
 | Authority | findings only |
 | Failure | `review_not_admitted` or `review_axis_blocked` |
 | Consumer | Route intake, griller, Design, current family, or human disposition |
@@ -48,13 +48,40 @@ Each reviewer receives the frozen digest, context, phase, exact subject, assigne
 
 An offer without affirmative acceptance remains `activation_pending` and does not create persistent review. `grill_infrastructure` remains active regardless of session-mode state.
 
+## Grill binding representation
+
+The grilling-specific review relation is phase-scoped; the other review contexts retain their existing contract:
+
+```text
+grill_request
+ -> pre_answer_pending | post_answer_pending | review_not_admitted
+pre_answer_pending
+ -> pre_answer_findings | review_not_admitted
+pre_answer_findings
+ -> human_answer
+post_answer_pending
+ -> post_answer_findings | review_not_admitted
+post_answer_findings
+ -> gap_classification | human_disposition
+```
+
+| Phase | Frozen packet | Required review binding | Next consumer |
+|---|---|---|---|
+| `pre_answer` | exact questions, options, evidence, `answer=null`, frozen digest | `review_context=grill_infrastructure`, `review_kind=grill`, one Standards + Specification assignment | griller presentation |
+| `post_answer` | exact questions, options, evidence, answers, prior review digest | same context/kind and one two-axis assignment against the same frozen surface | gap classification or human disposition |
+| either phase | current read-plan and coverage bindings | persist the review result before aggregation; no answer, route choice, or disposition by the reviewer | bound Grilling consumer |
+
+A missing phase packet, stale digest, unavailable required assignment, or unusable read binding follows the existing `review_not_admitted` or `review_axis_blocked` route.
+
 ## Operation
+
+Before step 1 or any later content read, validate the current Read plan binding above and admit only its coverage units; carry its read-plan and coverage digests and remaining frontier through the result. An unusable binding follows the existing `review_not_admitted` or `review_axis_blocked` failure.
 
 1. Freeze the exact round or decision packet, scope, and authority sources.
 2. Build the working context from authoritative files, not recalled chat history.
-3. For `design.grill-round.v0.1`, require `review_context=grill_infrastructure`, set `review_kind=grill`, and bind one reviewer assignment with Standards + Specification. With `review_phase=pre_answer`, copy the exact questions, options, evidence, and `answer=null`. With `review_phase=post_answer`, copy the exact questions, options, evidence, and answers. For `design.decision-review-input.v0.1`, require `review_context=intake` for a Route-intake greenfield gap, `design_decision` for non-persistent review, or `session_mode` for persistent review; require `review_kind=implementation_logic`; for `session_mode`, confirm the active `review.md` state. Copy the exact subject, unresolved decision candidate, constraints, and decision authority. Bind `producer=route.intake` and `consumer=Route intake or human` for `intake`; bind `producer=Design` and `consumer=Design or human disposition` for `design_decision`; bind `producer=current family` and `consumer=current family or human disposition` for `session_mode`. Construct `review.request.v0.1` with `review_context`, the admitted review kind, frozen digest, context-specific producer and consumer, one grill assignment or the implementation topology required by the context.
+3. For `design.grill-round.v0.1`, require `review_context=grill_infrastructure`, set `review_kind=grill`, and bind one reviewer assignment with Standards + Specification. With `review_phase=pre_answer`, copy the exact questions, options, evidence, and `answer=null`. With `review_phase=post_answer`, copy the exact questions, options, evidence, and answers. For `design.decision-review-input.v0.1`, require `review_context=intake` for a Route-intake greenfield gap, `design_decision` for non-persistent review, or `session_mode` for persistent review; require `review_kind=implementation_logic`; for `session_mode`, confirm the active `review.md` state. Copy the exact subject, unresolved decision candidate, constraints, and decision authority, `review_surface`, declared `artifact_kinds`, and `family_context`. Bind `producer=route.intake` and `consumer=Route intake or human` for `intake`; bind `producer=Design` and `consumer=Design or human disposition` for `design_decision`; bind `producer=current family` and `consumer=current family or human disposition` for `session_mode`. Construct `review.request.v0.1` with `review_context`, the admitted review kind, frozen digest, context-specific producer and consumer, declared review surface/artifacts, and one grill assignment or the implementation topology required by the context. Code artifacts must carry a validated code-artifact declaration and use the conditional hard-code review rules owned by `stage-0.review`; this module never infers them.
 4. For grilling, dispatch one bounded reviewer assignment with Standards + Specification. For a Design decision or intake review that is not grilling, dispatch the two implementation assignments defined by `review.md`. Persist each result before aggregation; no inline substitution is permitted in a parallel mode. `review.md` aggregates the supplied assignment identities and does not redispatch them.
-5. State the direct future consequences of the question or decision first; do not perform a whole-project audit. For every frozen option ID emit exactly one `per_option_findings` tuple with `option_id`, `whats_wrong`, `why_it_matters`, `example_scenario`, and `bottom_line_fix`; emit no tuple for an option not in the frozen packet and do not select or emit a disposition. For `post_answer`, also evaluate each exact answer against its frozen question and options.
+5. State the direct future consequences of the question or decision first; do not perform a whole-project audit. For every frozen option ID emit exactly one `per_option_findings` tuple with `option_id`, `whats_wrong`, `why_it_matters`, `failure_scenario`, and `bottom_line_fix`; emit no tuple for an option not in the frozen packet and do not select or emit a disposition. For `post_answer`, also evaluate each exact answer against its frozen question and options.
 6. Compile all assigned axis results into `design.review-round.v0.1`, including the review phase, direct future consequences, what closed, what remains unsupported, what expanded, who owns each unresolved decision, and candidate fixes/options.
 7. Return the compiled result without choosing the next grill route, answering for the human, or resolving the decision.
 8. On a clarification request, produce an append-only follow-up explanation; the follow-up cannot decide, edit, publish, or override the active workflow.
@@ -89,11 +116,11 @@ intake_pending -> intake_findings | review_not_admitted | review_axis_blocked
 - Checklist-close and merge-PR review are owned by `review.md` and have two reviewer assignments: Standards + Correctness and Specification-compliance + Correctness.
 - Every parallel reviewer assignment is a subagent result persisted against the frozen digest before the main agent consumes it.
 - `impact_first` precedes option findings and remains bounded to the decision's direct future consequences.
-- Every presented option has `What's wrong`, `Why it matters`, `Example scenario`, and `Bottom-line fix`; the reviewer does not select an option.
+- Every presented option has `What's wrong`, `Why it matters`, `Failure scenario`, and `Bottom-line fix`; the reviewer does not select an option.
 - All assigned axes inspect the same frozen surface; `not_applicable` is invalid for any required axis.
 - Each admitted input variant has exactly one request-construction branch.
 - A decision remains unresolved until the human-disposition consumer produces the resolution.
-- Code artifacts route to `stage-0.review` as `review_kind=implementation_logic`, whose review runs the assume-wrong stance, mechanism findings, and severity-ordered output; the deep reviewer does not review code itself.
+- Code artifacts route to `stage-0.review` as `review_kind=implementation_logic`, whose review runs the assume-wrong stance, mechanism findings, severity ordering, and conditional hard-code checks only from validated `review_surface` and `artifact_kinds`; the deep reviewer does not review code itself.
 - For packet rendering, `stage-0-write.md` carries the structure-selection rules for block-level rendering — headings, lead-ins, outline indentation lists, and tables; open it before writing a grill packet when the block forms are not already in use.
 
 ## Recovery
@@ -102,4 +129,4 @@ Missing context, questions, options, activation predicate, or active persistent 
 
 ## Completion
 
-Complete only when the assigned reviewer topology resolves—one two-axis assignment for `grill`, or two one-axis assignments for non-grill Design/intake review—`impact_first` is stated when options are present, `per_option_findings` contains exactly one complete five-field tuple per frozen option ID and no extras, each tuple contains `What's wrong`, `Why it matters`, `Example scenario`, and `Bottom-line fix`, and every finding names a consumer.
+Complete only when the assigned reviewer topology resolves—one two-axis assignment for `grill`, or two one-axis assignments for non-grill Design/intake review—`review_surface`, `artifact_kinds`, and `family_context` are current, `impact_first` is stated when options are present, `per_option_findings` contains exactly one complete five-field tuple per frozen option ID and no extras, each tuple contains `What's wrong`, `Why it matters`, `Failure scenario`, and `Bottom-line fix`, and every finding names a consumer.

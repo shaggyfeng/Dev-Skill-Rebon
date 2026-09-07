@@ -45,9 +45,9 @@ Host task states are:
 
 | Mode | Execution |
 |---|---|
-| `parallel-normal` | bounded Workflow reader, writer/implementer, reviewer, verifier, and integrator cards; `parallel`, `pipeline`, `agent`, and `StructuredOutput` remain inside the Workflow; no optimized preworkflow or optimized retry rounds |
+| `parallel-normal` | bounded Workflow reader, writer/implementer, reviewer, verifier, and integrator cards under the shared deterministic read-admission contract; `parallel`, `pipeline`, `agent`, and `StructuredOutput` remain inside the Workflow; no optimized preworkflow or optimized retry rounds |
 | `parallel-optimized` | one task-scoped four-role preworkflow before each admitted task, then bounded Workflow |
-| `sequential-normal` | provider-neutral sequential step runner; no `agent()` or `parallel()` |
+| `sequential-normal` | provider-neutral sequential step runner; no `agent()` or `parallel()`; multi-unit reads persist `runtime.read-frontier.v0.1` and `runtime.handoff.v0.1` between units |
 | `sequential-optimized` | one task-scoped four-role sequential preworkflow before each admitted task, then sequential step runner |
 
 Bind optimized host operations to the task scope and reuse predicate in `SKILL.md`. Apply that rule to every Rebon family task.
@@ -66,7 +66,7 @@ When Rebon is the host and either parallel mode is selected, classify every spaw
 
 Apply the binding to Workflow cards, parallel branches, pipeline callbacks, direct Agent calls, background LocalAgent tasks, nested delegates, continuations, recovery workers, review workers, verification workers, fix workers, and attention sidecars.
 
-Review card topology in either parallel mode is exact: grilling uses one `verification` card with Standards + Specification; an implementation slice uses two `verification` cards, one Standards and one Specification; roadmap checklist closure and merge-PR review use two `verification` cards, one Standards + Correctness and one Specification-compliance + Correctness. Each card binds `review_kind`, `assignment_id`, assigned axes, named agent, budgets, frozen digest, persisted result, and consumer. A missing, merged, or unpersisted assignment blocks aggregation.
+Review topology in either parallel mode is exact: grilling uses one assignment with Standards + Specification; an implementation slice uses two assignments, one Standards and one Specification; roadmap checklist closure and merge-PR review use two assignments, one Standards + Correctness and one Specification-compliance + Correctness. A fitting assignment uses one `verification` card. An oversized assignment uses bounded `verification` evidence cards plus one read-free `verification` synthesis card, all bound to the same assignment ID and axes. Each assignment binds `review_kind`, `assignment_id`, assigned axes, read-plan and coverage digests, named agent, budgets, remaining `retry_budget`, frozen digest, persisted result, and consumer. A missing, merged, incomplete-coverage, or unpersisted assignment blocks aggregation. One Work slice completes this topology before another slice is admitted.
 
 If an explicit role/agent pair conflicts or a named selector is unavailable, reclassify the task and select the best available role. Use explicit `general-purpose` when no specialized role fits. Unresolved binding returns `agent_role_not_admitted`.
 
@@ -87,7 +87,9 @@ Non-Rebon hosts never use these bindings.
 
 Every parallel structured card binds:
 
-`maxIterations`, `maxToolCalls`, `maxFiles`, `maxReads`, `maxOutputTokens`, and a valid structured-output terminal/stop hook.
+`maxIterations`, `maxToolCalls`, `maxFiles`, `maxBytes`, `maxLines`, `maxEstimatedInputTokens`, `maxReads`, `maxOutputTokens`, `retry_budget`, and a valid structured-output terminal/stop hook.
+
+Before a Workflow or Agent card reads content, use native non-model listing, Grep/search, metadata, and count tools to compile `runtime.read-plan.v0.1`. Measure the declared target before dispatch; do not spend card iterations discovering whether the target fits. When the complete target exceeds any card or context budget, dispatch only the pre-partitioned coverage units.
 
 Card read/synthesis boundary:
 
@@ -95,16 +97,18 @@ Card read/synthesis boundary:
 - A planning, review, decision, or synthesis card consumes persisted evidence, binds `maxFiles=0` and `maxReads=0`, and cannot perform repository exploration.
 - A task requiring repository exploration and synthesis is split into evidence cards followed by one synthesis card before dispatch.
 - A split uses declared coverage units; source/test pairing is used only when the input declares that seam.
+- In either normal mode, the same sizing and partition rule applies even though optimized preworkflow is forbidden. `parallel-normal` persists bounded evidence-card outputs; `sequential-normal` persists one read frontier and handoff after each bounded unit.
 
 Dispatch rules:
 
-1. Admit the current structured-output hook and budgets.
-2. Require exactly one structured-output call.
-3. Validate and persist a valid result before consuming later worker status.
-4. Treat the persisted result as terminal for that worker.
-5. Split an oversized evidence or review card before retry.
-6. In `parallel-optimized`, retry only with a smaller schema and explicit single-call output instruction.
-7. After missing output or an oversized broad card, dispatch bounded evidence cards followed by a read-free synthesis card; do not retry the same broad card.
+1. Compile and admit the current read plan before any content-reading Workflow card; admit the current structured-output hook, numeric budgets, and remaining retry budget.
+2. Refuse a broad card when deterministic counts exceed or cannot prove fit within those budgets; partition before dispatch.
+3. Require exactly one structured-output call.
+4. Validate and persist a valid result before consuming later worker status.
+5. Treat the persisted result as terminal for that worker.
+6. Split an oversized evidence or review card before retry.
+7. In `parallel-optimized`, retry only with a smaller schema and explicit single-call output instruction.
+8. After missing output or an oversized card, preserve valid fragments, shrink the remaining read frontier, decrement and persist `retry_budget`, then dispatch bounded evidence cards followed by a read-free synthesis card; do not retry the same scope.
 
 Smaller-schema single-call recovery applies only to `parallel-optimized`; it is forbidden in `parallel-normal` and both sequential modes.
 
@@ -115,6 +119,7 @@ Statuses:
 | no valid result before worker return | `structured_output_missing` | split or bounded recovery when eligible; otherwise `orchestration_blocked` |
 | budget ends before result | `iteration_budget_exhausted_before_output` | split or bounded recovery when eligible; otherwise `orchestration_blocked` |
 | result persisted before later worker continuation | `structured_output_received_but_worker_continued` | `result_persisted` |
+| retry budget reaches zero before an eligible retry | `retry_budget_exhausted` | `orchestration_blocked` |
 
 The last status retains the persisted result and follows the completed-result route.
 
@@ -125,9 +130,11 @@ profile_unresolved -> tool_profile_not_admitted
 profile_admitted -> task_records_bound
 task_records_bound -> preworkflow_pending | execution_ready
 preworkflow_pending -> execution_ready | preworkflow_not_admitted
-execution_ready -> running | card_not_admitted | agent_role_not_admitted
+execution_ready -> read_plan_pending | running | card_not_admitted | agent_role_not_admitted
+read_plan_pending -> running | split | card_not_admitted
 running -> result_persisted | structured_output_missing | iteration_budget_exhausted_before_output | orchestration_blocked | interrupted
 structured_output_missing | iteration_budget_exhausted_before_output -> split | orchestration_blocked
+retry_budget_exhausted -> orchestration_blocked
 result_persisted -> host_task_updated -> DevSkill_consumer
 interrupted -> resumed | split | orchestration_blocked
 resumed | split -> preworkflow_pending | execution_ready
@@ -135,16 +142,17 @@ resumed | split -> preworkflow_pending | execution_ready
 
 ## Re-entry and recovery
 
-- `TaskList` and `TaskGet` before resume, recovery, split, replacement, or plan reopen.
+- `TaskList` and `TaskGet` before resume, recovery, split, replacement, or plan reopen; carry the current remaining `retry_budget` into the next binding.
+- Recompute deterministic target counts before dispatch when any target path, digest, budget, or consumer changes; preserve completed coverage and replace only the stale frontier. A retry decrements `retry_budget` before dispatch.
 - Re-enter Stage 0 and the current family before the next host call after a task result or changed consumer.
 - Re-run optimized preworkflow for a new or invalidated scope, or when the exact durable result is absent, stale, or incomplete after resume.
 - Reconcile host tasks against the current applied plan; do not repair conflicts from model memory or by deleting records.
-- Persist a valid structured result before reporting worker exhaustion.
-- Return a typed block when required schema, task state, plan digest, role binding, or next consumer is missing.
+- Persist a valid structured result before reporting worker exhaustion; if no valid result exists, exhaust or decrement `retry_budget` through the typed recovery route rather than continuing the worker.
+- Return a typed block when required schema, task state, plan digest, role binding, next consumer, or retry budget is missing; zero budget returns `orchestration_blocked` rather than another card.
 
 ## Module registry
 
-`work.parallel-card-set.v0.1` binds operation/family/task IDs, scope digest, dependency graph, one-outcome cards, owner roles, budgets, output contracts, recovery, and consumers. `rebon.workflow-result.v0.1` binds the native run/card IDs, persisted structured outputs, statuses, errors, task-ledger updates, and provider-neutral consumer. Both retain the originating provider-neutral authority ceiling.
+`work.parallel-card-set.v0.1` binds operation/family/task IDs, scope digest, dependency graph, one-outcome cards, owner roles, read-plan and coverage-unit IDs, numeric budgets, `retry_budget`, output contracts, recovery, and consumers. `rebon.workflow-result.v0.1` binds the native run/card IDs, persisted structured outputs, coverage accumulator, statuses, errors, task-ledger updates, remaining `retry_budget`, and provider-neutral consumer. Both retain the originating provider-neutral authority ceiling.
 
 | Module | Versioned input | Versioned output | Actor and ceiling | Module file | Failure route | Consumer |
 |---|---|---|---|---|---|---|
@@ -158,7 +166,9 @@ resumed | split -> preworkflow_pending | execution_ready
 
 - Rebon host state never grants DevSkill authority, approval, review completion, or checklist closure.
 - Every spawned Rebon parallel task has one admitted named-agent binding.
-- Every structured card has finite numeric budgets and exactly one terminal structured-output call.
+- Every structured card has finite numeric budgets, a finite `retry_budget`, and exactly one terminal structured-output call.
+- Every content-reading card is admitted by a deterministic read plan compiled before Workflow dispatch; no model iteration is used for target sizing.
+- A Work implementation candidate opens its own review barrier and cannot be batched with candidates from other slices.
 - A persisted valid structured result cannot be replaced by later worker failure status.
 
 ## Terminals
@@ -166,4 +176,3 @@ resumed | split -> preworkflow_pending | execution_ready
 `DevSkill_consumer`, `tool_profile_not_admitted`, `task_list_not_admitted`, `card_not_admitted`, `agent_role_not_admitted`, `preworkflow_not_admitted`, and `orchestration_blocked` are the only adapter terminals.
 
 The adapter is dispatch and synchronization only. It cannot mutate the project outside the exact admitted provider-neutral family task.
-

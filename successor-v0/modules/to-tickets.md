@@ -8,8 +8,8 @@
 | Envelope | input and output each carry `runtime.module-envelope.v0.1` |
 | Prerequisites | trigger matched; complete current input/envelope, authority, runtime file, producer, and consumer admitted |
 | Trigger | exact `plan.specification.v0.1` digest has `status=specification_approved` |
-| Input | `plan.ticket-generation-input.v0.1`: `task_id`, `scope_digest`, `plan.specification.v0.1` with `status=specification_approved`, dependency graph, repository snapshot, execution profile, producer, consumer |
-| Output | `plan.ticket-set.v0.1`: stable ticket IDs, requirement coverage, objectives, transformations, inputs/exclusions, dependencies/blockers, read/write sets, review surface, acceptance/verification, recovery, resume pointer, status, consumer |
+| Input | `plan.ticket-generation-input.v0.1`: `task_id`, `scope_digest`, `plan.specification.v0.1` with `status=specification_approved` and its `review_surface`, declared `artifact_kinds`, `family_context`, authority source IDs, exact frozen subject, producer, consumer, review kind, and required-axis derivation inputs, dependency graph, repository snapshot, execution profile, producer, consumer |
+| Output | `plan.ticket-set.v0.1`: stable ticket IDs, requirement coverage, objectives, transformations, inputs/exclusions, dependencies/blockers, read/write sets, `review_surface`, declared `artifact_kinds`, `family_context`, authority source IDs, exact frozen subject, producer, consumer, review kind and required-axis derivation inputs, acceptance/verification, recovery, resume pointer, status, consumer |
 | Authority | candidate Work decomposition only |
 | Failure | `ticket_repartition` or `plan_revision` |
 | Consumer | `plan.ticket-set.resolve`; its approved branch continues through `plan.work-start.compile` then `plan.work-start.resolve` |
@@ -22,7 +22,7 @@
 4. Add an integration ticket when intermediate batches cannot remain valid independently.
 5. Derive dependency edges from actual prerequisites and reject cycles, overlapping write ownership, and hidden shared-state conflicts.
 6. Bind every specification requirement and acceptance ID to at least one ticket.
-7. Bind exact scope, transformation, dependencies, blockers, read/write ownership, review surface, verification, recovery, resume pointer, and consumer for every ticket.
+7. Bind exact scope, transformation, dependencies, blockers, read/write ownership, `review_surface`, declared `artifact_kinds`, `family_context`, authority source IDs, exact frozen subject, producer, consumer, review kind and required-axis derivation inputs, verification, recovery, resume pointer, and consumer for every ticket. Missing or conflicting Review declarations return `ticket_repartition` or `plan_revision`; Work never infers them.
 8. Resolve ticket-set approval separately from Work-start authorization.
 
 ## Invariants
@@ -30,6 +30,7 @@
 - Tickets cannot redefine the specification.
 - The graph is acyclic and every ticket fits one bounded Work slice.
 - No requirement, acceptance criterion, or write set is unowned.
+- Every generated ticket preserves the complete Review declaration set from the approved specification; missing or conflicting declarations fail closed through `ticket_repartition` or `plan_revision`, and downstream Work never infers them.
 
 ## Recovery
 

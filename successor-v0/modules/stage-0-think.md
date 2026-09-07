@@ -11,7 +11,7 @@
 | Input | `think.input.v0.1`: `task_id`, `scope_digest`, subject, reasoning need, claims, evidence, constraints, authority sources, known gaps, producer, consumer |
 | Output | `think.brief.v0.1`: representation blocks with stable IDs, exposed claims and relations, gaps, authority boundaries, validation, status, consumer |
 | Authority | candidate structural representation only |
-| Failure | `structural_gap` or `structural_authority_conflict` |
+| Failure | `structural_gap`, `structural_authority_conflict`, or `structural_invalidated` |
 | Consumer | active family, `stage-0.review`, or `stage-0.write` |
 
 ## Representation selector
@@ -50,7 +50,7 @@
 
 - Missing meaning returns `structural_gap`; conflicting authority returns `structural_authority_conflict`.
 - Insufficient evidence remains an explicit gap; oversized scope splits by independently consumable relation group.
-- Changed scope or consumer returns `invalidated` to Stage 0 before retry.
+- Changed scope or consumer returns envelope `status=invalidated` with `failure_route=structural_invalidated` to Stage 0 before retry.
 
 ## Completion
 
