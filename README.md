@@ -1,152 +1,120 @@
-# DevSkill Unslop
+# DevSkill Unslop 2.0
 
 > AI can write code faster than you can regret the architecture.
 >
 > — ChatGPT 5.6
 
-DevSkill Unslop supports 10+ hour runs **without human** for implement phase in [Rebon agents](https://reboncode.ai/). It keeps the main context clean, uses bounded subagents, restores state from project files, and selects the right skill from the task. Humans still control design and permissions.
+DevSkill Unslop turns an AI agent from a prompt-driven helper into a developer with a working method: real-world professional workflows, a route that triggers the right capability, and a rule against work that looks safe but does not move the human goal.
 
-## Routing Chooses the Skill
+## What it changes
 
-Users describe the work. Route identifies the task type, selects the development stage, and loads only the modules that match.
+- **Professional workflows** — design through release
+- **Automatic routing** — no remembered prompts
+- **Less defensive slop** — work must move value
 
-| Task signal | Automatic route | Direct value |
-|---|---|---|
-| Unclear intent | Design grilling | Meaning comes before code |
-| Architecture question | Architecture design | Boundaries come before files |
-| Resolved design | Planning | Decisions become executable |
-| Admitted work | Implementation and TDD | Changes stay bounded |
-| Broken behavior | Diagnosis | Evidence comes before fixes |
-| Review request | Matching review | Risk selects the checks |
-| Release candidate | Release | Proof comes before closure |
-| Writing request | Writing modules | Output stays readable |
-| Context change | Re-entry | Active rules return |
+## Lineage
 
-The user does not need to remember which skill to name.
+DevSkill Unslop builds on Matt Pocock’s [Skills for Real Engineers](https://github.com/mattpocock/skills).
 
-## Stage Families Hold Direction
+Matt’s project brought real engineering methods into agent work. This release rebuilds their runtime topology around stage families, explicit module contracts, automatic routing, durable re-entry, and a stricter answer to AI slop.
+
+## A complete development route
 
 ```mermaid
 flowchart TB
-    A["Human intent"] --> B["Route"]
-    B --> C["Design"]
-    C --> D["Plan"]
-    D --> E["Work"]
-    E --> F["Release"]
-    F --> G{"Closure valid?"}
-    G -->|Yes| H["Complete"]
-    G -->|No| I["Reopen owning stage"]
-    I --> B
-```
-
-Each stage owns one kind of decision. Problems return to the stage that can resolve them.
-
-| Stage | Owns | Direct value |
-|---|---|---|
-| Route | Task classification | Correct work starts |
-| Design | Meaning and boundaries | Human intent survives |
-| Plan | Executable structure | Work stays focused |
-| Work | Implementation and proof | Code matches decisions |
-| Release | Evidence and permission | Closure stays honest |
-
-## Modules Carry One Job
-
-Every module defines when it applies, what it may do, and where its result goes.
-
-| Module rule | Direct value |
-|---|---|
-| Clear trigger | Activates automatically |
-| Required inputs | Prevents guessing |
-| Bounded authority | Prevents self-promotion |
-| Ordered operation | Prevents skipped steps |
-| Named output | Makes results checkable |
-| Named consumer | Keeps work moving |
-| Failure route | Keeps problems recoverable |
-| Invalidation rule | Blocks stale results |
-
-This makes automatic skill selection reliable instead of prompt-dependent.
-
-## Subagents Keep Context Clean
-
-```mermaid
-flowchart TB
-    A["Main context"] --> B["Bounded task cards"]
-    B --> C["Reader"]
-    B --> D["Implementer"]
-    B --> E["Reviewer"]
-    B --> F["Verifier"]
-    C --> G["Persisted results"]
-    D --> G
-    E --> G
+    A["Human task"] --> B["Route"]
+    B --> C{"What is needed now?"}
+    C -->|"Meaning unclear"| D["Design"]
+    C -->|"Design settled"| E["Plan"]
+    C -->|"Approved slice"| F["Work"]
+    C -->|"Ready result"| G["Release"]
+    D --> E
+    E --> F
     F --> G
-    G --> H["Main integration"]
-    H --> I["Re-entry"]
-    I --> A
+    G --> H["Complete or reopen owner"]
 ```
 
-Repository reading, implementation, review, and verification can run in separate bounded contexts. The main agent receives compact results instead of carrying every file, attempt, and review trace.
-
-That is how long runs stay coherent.
-
-## Small Models Stay Useful
-
-DevSkill supports powerful parallel agents, small online contexts, and a single local AI.
-
-| Available setup | Execution strategy | Direct value |
+| Family or overlay | Module or sub-operation | Job |
 |---|---|---|
-| Single local AI | Sequential roles | No subagents required |
-| Small online context | Bounded cards | Less context waste |
-| Parallel online agent | Specialized subagents | Faster independent work |
-| Long-running task | Durable handoffs | Progress survives resets |
+| Admission | Mode Gate | Confirm host, mode, and capability fit |
+| Route | Route | Select one current consumer |
+| Route | Project Discovery | Establish greenfield, brownfield, or uncertain facts |
+| Route | Common Sense — Vibe and Attention | Retrieve a relevant pattern reference |
+| Design | Grilling | Present reviewed design choices |
+| Design | Review | Return bounded findings only |
+| Design | Decision — Think and Humour | Represent, test, and select semantic options |
+| Design | Research — Pathfinding | Find deep factual routes under fog |
+| Design | Domain Modeling | Resolve terms, rules, and exact semantic writes |
+| Design | Prototype | Answer one bounded runnable question |
+| Design | Manual Procedure | Guide a temporary human operation |
+| Design | Teaching | Build demonstrated human understanding |
+| Design | Codebase Design | Choose seams, modules, and dependencies |
+| Design | Improve Codebase Architecture | Surface evidence-backed architecture candidates |
+| Plan | Two-Layer Development Planning | Show workflow and structure together |
+| Plan | To-Spec | Shape accepted meaning into a specification |
+| Plan | To-Tickets | Form outcome-bearing vertical slices |
+| Work | Implementation and TDD | Change one accepted behavior at a time |
+| Work | Diagnosing Bugs | Narrow symptoms to a supported cause |
+| Work | Handoff and Boundaries | Transfer work across a real boundary |
+| Work | Context Optimization | Bound reading, reasoning, writing, and continuation |
+| Work | Rebon Host Adapter | Use Rebon-native workflow and task tools |
+| Presentation | Write | Render reports, records, conversations, and instructions |
+| Presentation | Markdown Tables and Diagrams | Render a selected structure clearly |
+| Presentation | Writing Style | Select an explicit writing treatment |
+| Presentation | Talk Like King | Style conversation and creative work without changing meaning |
+| Release | Release | Reconcile work and return an effect or reopening path |
 
-**Small-context optimization** separates repository reading from planning and review. Evidence is gathered in bounded pieces, summarized once, and reused by later roles.
+Each module has a task trigger, inputs, operation, authority boundary, return, and recovery path. The user may name a module, but naming it is never the only way it starts.
 
-Failed oversized tasks split into smaller units. Valid outputs persist. Recovery uses smaller schemas instead of repeating the same failed request.
+## The decision tree runs itself
 
-Large plans stop depending on one large context window.
+```mermaid
+flowchart TB
+    A["Task arrives"] --> B["Mode and host admission"]
+    B --> C["Route"]
+    C --> D{"Semantic choice?"}
+    D -->|"Yes"| E["Review"]
+    E --> F["Decision"]
+    F --> G["Next stage or module"]
+    D -->|"No"| G
+    G --> H["Re-entry after each result"]
+    H --> C
+```
 
-## Files Keep the Agent Oriented
+This makes the skill usable without ritual prompts such as “now review,” “now research,” or “use TDD.” The agent can recognize the situation, load the right runtime instruction, and return its result to the right consumer.
 
-The project files hold the durable state. Chat history does not need to carry everything.
+## It refuses defensive busywork
 
-| Durable state | What it preserves |
+AI often treats “more checking” as “more responsible.”
+
+That can turn a five-minute task into a five-day ceremony: hashes, records, fallback layers, verification loops, and reports nobody will use.
+
+DevSkill Unslop keeps a rule at the center:
+
+> Retain a rule only when it changes a current read, question, choice, action, return, or human Value Gap.
+
+A module may not add machinery merely because it looks safe. Review finds problems. Decision selects meaningful options. Work closes the actual gap.
+
+## Built for short contexts and long runs
+
+| Environment | Runtime approach |
 |---|---|
-| Current scope | Allowed work |
-| Accepted decisions | Settled design |
-| Current task | Active objective |
-| Dependencies | Required ordering |
-| Open gates | Needed decisions |
-| Verification | Proof of completion |
-| Next action | Resume position |
+| Local single agent | Sequential workflow |
+| Small context window | Bounded reading and synthesis |
+| Parallel agent host | Specialized bounded workers |
+| Rebon optimized mode | Context optimization and durable continuation |
 
-After compaction, restart, handoff, or subagent return, re-entry reloads the required files and validates the current state.
+On compatible Rebon agents, a goal with settled design and permissions can continue for **10+ hours without constant human supervision**. Context-heavy reading, implementation, review, and verification stay bounded, so the main agent does not carry every file and failed attempt forever.
 
-The agent knows what happened, what remains, and what must happen next.
-
-## Long Runs Need Less Babysitting
-
-Once goals and permissions are set, the agent can continue through planning, implementation, review, fixes, verification, and recovery without asking the user to govern every step.
-
-| Situation | Agent behavior |
-|---|---|
-| Mechanical failure | Fix and continue |
-| Review finding | Apply and recheck |
-| Context loss | Reload and resume |
-| Stale result | Invalidate and rerun |
-| New design decision | Return to human |
-| New permission | Return to human |
-
-The agent keeps working. Human design and permission remain authoritative.
+Humans still own meaning, authority, and permissions.
 
 ## Installation
-
-Using a Skills-compatible installer:
 
 ```bash
 npx skills@latest add shaggyfeng/Dev-Skill-Unslop
 ```
 
-Or install the repository as `dev-skill` inside your agent’s personal skill directory.
+Or install the repository as `dev-skill` inside your agent’s skill directory.
 
 For Codex:
 
@@ -154,19 +122,7 @@ For Codex:
 ~/.codex/skills/dev-skill
 ```
 
-Then describe the work:
-
-```text
-Use dev-skill for this task.
-```
-
-Route chooses what happens next.
-
-## Lineage
-
-DevSkill Unslop builds on Matt Pocock’s [Skills for Real Engineers](https://github.com/mattpocock/skills).
-
-The original project brings real development methods into AI workflows. This overhaul expends and merges the modules, connects those methods through routing, stage families, module contracts, durable state, and long-run execution.
+Then describe the task normally. The skill routes the work.
 
 ## Author
 
@@ -174,4 +130,4 @@ The original project brings real development methods into AI workflows. This ove
 
 ## License
 
-Released under the [MIT License](./LICENSE).
+[MIT](./LICENSE)
