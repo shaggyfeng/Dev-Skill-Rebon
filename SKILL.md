@@ -34,12 +34,13 @@ For an imported structural term, `Load` means read its owning module before usin
 
 ## Universal route
 
-Route every engineering request before family work. Direct overlays precede stage continuation. With no active stage or valid overlay, Route performs factual discovery before selecting Design or Plan.
+Route every engineering request before family work. A direct overlay or accepted in-scope continuation stays direct. When an indirect engineering intent does not determine its next responsible operation, Route uses Decision before discovery or stage selection.
 
 | When | Load | Return to |
 |---|---|---|
+| An indirect engineering thought, concern, preference, constraint, or goal leaves next work semantically unresolved | [Decision](successor-v0/modules/decision.md) | Human Intent State, factual gap, or human question to Route |
 | A design choice or meaning is unresolved | [Grilling](successor-v0/modules/grilling.md) | Accepted rule or next question to the caller |
-| An output is semantic | [Review](successor-v0/modules/review.md), then [Decision](successor-v0/modules/decision.md) | Findings, then semantic disposition to the caller |
+| A frozen candidate needs findings before a semantic disposition | [Review](successor-v0/modules/review.md), then [Decision](successor-v0/modules/decision.md) | Findings, then semantic disposition to the caller |
 | Inspection is findings-only | [Review](successor-v0/modules/review.md) | Findings to the caller |
 | A controlling fact or factual path is missing | [Research](successor-v0/modules/research.md) | Evidence or factual frontier to the caller |
 | A prototype question is bounded | [Prototype](successor-v0/modules/prototype.md) | Bounded evidence to the caller |

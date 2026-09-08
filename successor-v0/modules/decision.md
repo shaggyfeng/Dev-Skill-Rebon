@@ -2,18 +2,20 @@
 
 ## Trigger and boundary
 
-Use Decision when an accepted rule does not uniquely determine an output and the output creates, removes, recommends, selects, narrows, prioritizes, trades off, authorizes, or records an option. A user naming Decision is sufficient; it is not the only trigger.
+Use Decision when an accepted rule does not uniquely determine an output and the output creates, removes, recommends, selects, narrows, prioritizes, trades off, authorizes, or records an option. It also frames an indirect engineering thought, concern, preference, constraint, or goal when no accepted rule maps it directly to a responsible operation. A user naming Decision is sufficient; it is not the only trigger.
 
 ```text
 accepted rule uniquely determines output -> caller uses the mechanical or evidentiary result
-otherwise -> Review findings -> Decision -> presenter, recorder, or admitted actor
+indirect engineering intent -> Decision frames Human Intent State -> Route selects the next consumer
+candidate needs findings -> Review findings -> Decision -> presenter, recorder, or admitted actor
 ```
 
 Decision is the final semantic operation. A later semantic change returns to Review, then Decision. Decision does not route, research, write, implement, review, or update Common Sense.
 
 ## Inputs
 
-- Candidate options and current facts.
+- Candidate options and current facts when an option already exists.
+- Indirect intent: the stated thought, concern, preference, constraint, or goal, without invented project facts or candidate options.
 - Human Intent State: current observation, desired outcome, Value Gap, protected meaning, unresolved ambiguity, and any provisional hypothesis.
 - Relevant Review findings.
 - A compact Common Sense reference when one matched; its absence changes nothing.
@@ -47,8 +49,9 @@ Decision is the final semantic operation. A later semantic change returns to Rev
 
 ## Operation
 
-1. Preserve protected meaning. An exact accepted option or bound fix remains exact. Equivalent free text preserves its meaning. Use the Grilling reference when wording changes or stays ambiguous.
-2. Think selects the minimum useful representation without changing protected meaning or manufacturing completeness.
+1. For indirect intent with no directly determined operation, state only the current observation, desired outcome, protected meaning, and unresolved ambiguity. Return Human Intent State, a factual gap, or a human-owned question. Do not invent facts, candidate options, a stage, a module, or authority.
+2. Preserve protected meaning. An exact accepted option or bound fix remains exact. Equivalent free text preserves its meaning. Use the Grilling reference when wording changes or stays ambiguous.
+3. Think selects the minimum useful representation without changing protected meaning or manufacturing completeness.
 
    | Need | Representation |
    |---|---|
@@ -57,15 +60,19 @@ Decision is the final semantic operation. A later semantic change returns to Rev
    | Repeated fields | Schema or mapping |
    | Dependencies or authority | Dependency or authority map |
 
-3. Immediately before return, Humour tests each candidate after its selected safeguards, verification, fallback, and recovery are known. Use the Humour test shape for each candidate.
-4. Invalidate a candidate only within a condition zone that increases the Value Gap. A candidate not invalidated is not thereby valid, approved, or preferred. Humour neither scores candidates nor vetoes generic risk.
-5. Compare surviving candidates by their ability to close the stated Value Gap. Recommend only a clearly dominant candidate. Use the Grilling reference when a human-valued priority remains non-comparable.
+4. Obtain Review findings only when a frozen candidate needs them. An indirect intent without a candidate does not manufacture a review surface.
+5. Immediately before return, Humour tests each candidate after its selected safeguards, verification, fallback, and recovery are known. Use the Humour test shape for each candidate.
+6. Invalidate a candidate only within a condition zone that increases the Value Gap. A candidate not invalidated is not thereby valid, approved, or preferred. Humour neither scores candidates nor vetoes generic risk.
+7. Compare surviving candidates by their ability to close the stated Value Gap. Recommend only a clearly dominant candidate. Use the Grilling reference when a human-valued priority remains non-comparable.
 
 ## Returns
 
 | Result | Consumer |
 |---|---|
 | Mechanical or evidentiary determination | Calling operation |
+| Indirect intent with a factual gap | [Route](../stage-0-route.md) for Project Discovery or Research |
+| Indirect intent with unresolved human meaning | [Grilling](grilling.md) |
+| Indirect intent with sufficient facts | [Route](../stage-0-route.md) with Human Intent State |
 | Resolved meaning or accepted semantic disposition | Calling operation |
 | Invalidated option with failure scenario, component, and condition zone | [Grilling](grilling.md) |
 | Unresolved human meaning or priority | [Grilling](grilling.md) |
@@ -76,3 +83,4 @@ Decision is the final semantic operation. A later semantic change returns to Rev
 - The Review reference produces findings; Decision selects no facts that evidence cannot support.
 - The Write reference may render a Decision result but may not change it.
 - An admitted actor consumes the Decision result; it does not substitute a new semantic choice.
+- Decision does not select a Route stage, module, terminal, or authority. Route consumes its Human Intent State and selects the next consumer.

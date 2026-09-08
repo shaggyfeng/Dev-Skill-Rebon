@@ -29,7 +29,7 @@ One Work slice completes its findings, fixes, repeat findings, verification, and
 | Violated rule or requirement | The exact Standards, Specification, or Correctness expectation not met |
 | Consequence | What consumer, behavior, authority, or closure claim is affected |
 | Failure mechanism | How the candidate produces the consequence |
-| Required correction | The smallest owning change that removes the finding without selecting new meaning |
+| Required correction | The smallest owning change that removes the finding without selecting new meaning. Never an added safeguard, fallback, verification, recovery, or action to appear safer. A finding citing only safety without an exact violated expectation is invalid |
 
 ## Runtime references
 

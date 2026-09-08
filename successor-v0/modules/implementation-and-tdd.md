@@ -25,7 +25,7 @@ A TDD cycle is one behavior test that fails for the expected reason, the minimum
 | A normal-mode slice cannot fit | [Mode Gate](../../mode-gate.md) | Re-admitted profile with an optimized mode suggested |
 | A bounded unexpected failure appears | [Diagnosing Bugs](diagnosing-bugs.md) | Supported cause and bounded fix scope to Work |
 | A candidate needs implementation findings | [Review](review.md) | Separate Standards and Specification findings for the owning slice |
-| An implementation direction is semantic | [Decision](decision.md) | Semantic disposition to Work, Plan, or Design |
+| An implementation direction is semantic or a correction to close a finding adds a safeguard, fallback, verification, recovery, or action beyond the smallest owning change | [Decision](decision.md) | Semantic disposition to Work, Plan, or Design |
 
 ## Operation
 
@@ -34,7 +34,7 @@ A TDD cycle is one behavior test that fails for the expected reason, the minimum
 3. Derive expected values independently. Test public behavior; mock only external effects or nondeterministic boundaries. Do not couple tests to private collaborators or refactor-insensitive behavior.
 4. When no valid red-first seam exists, state why and use the slice's declared verification path. Do not invent a seam mid-slice.
 5. Read back changed artifacts and run focused static and behavioral checks.
-6. Immediately use the Review reference for separate Standards and Specification findings. Correct findings, rerun affected review and verification, then integrate before another dependent slice begins.
+6. Immediately use the Review reference for separate Standards and Specification findings. Apply the semantic-choice test to the correction itself: when it is not the smallest owning change or it adds safety or meaning beyond the accepted seam, route Review then Decision for Humour test before any write. Otherwise correct findings, rerun affected review and verification, then integrate before another dependent slice begins.
 
 ## Returns
 
@@ -43,4 +43,4 @@ A TDD cycle is one behavior test that fails for the expected reason, the minimum
 | Reviewed, verified candidate | [Work](../work.md) integration |
 | Unexpected failure with bounded symptom | [Diagnosing Bugs](diagnosing-bugs.md) |
 | Missing seam, changed meaning, or invalid scope | [Plan](../plan.md) or [Design](../design.md) |
-| Semantic implementation choice | [Review](review.md), then [Decision](decision.md) |
+| Semantic implementation choice or correction adding a safeguard, fallback, verification, recovery, or action | [Review](review.md), then [Decision](decision.md) |

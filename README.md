@@ -1,4 +1,4 @@
-# DevSkill Unslop 2.0
+# DevSkill Unslop 2.0.1
 
 > AI can write code faster than you can regret the architecture.
 >
@@ -72,16 +72,18 @@ Each module has a task trigger, inputs, operation, authority boundary, return, a
 flowchart TB
     A["Task arrives"] --> B["Mode and host admission"]
     B --> C["Route"]
-    C --> D{"Semantic choice?"}
-    D -->|"Yes"| E["Review"]
-    E --> F["Decision"]
-    F --> G["Next stage or module"]
-    D -->|"No"| G
+    C --> D{"Next operation determined?"}
+    D -->|"Yes"| G["Next stage or module"]
+    D -->|"No"| E["Decision frames intent"]
+    E --> F{"Candidate needs findings?"}
+    F -->|"Yes"| I["Review"]
+    I --> E
+    F -->|"No"| G
     G --> H["Re-entry after each result"]
     H --> C
 ```
 
-This makes the skill usable without ritual prompts such as “now review,” “now research,” or “use TDD.” The agent can recognize the situation, load the right runtime instruction, and return its result to the right consumer.
+This makes the skill usable without ritual prompts such as “now review,” “now research,” or “use TDD.” A direct request stays direct. An indirect engineering concern reaches Decision first, so the next step reflects the human goal instead of a guessed workflow.
 
 ## It refuses defensive busywork
 
