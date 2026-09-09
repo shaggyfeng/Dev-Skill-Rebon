@@ -33,9 +33,16 @@ State the required behavior, chosen module, interface, hidden implementation res
 | Evidence about the existing architecture is missing | [Improve Codebase Architecture](improve-codebase-architecture.md) or [Research](research.md) | Survey or evidence to complete the candidate |
 | A candidate comparison or interface choice is semantic | [Review](review.md), then [Decision](decision.md) | Findings and semantic disposition for the candidate |
 
+## Checkpoints
+
+| When | Checkpoint | Allows |
+|---|---|---|
+| Plan supplies accepted Design meaning and a bounded architecture concern | `architecture_started` | Candidate behavior, ownership, interfaces, seams, and constraints |
+| A candidate structure or evidence gap is complete | `architecture_returned` | Declared specification, paired-view, evidence, Design, or semantic return |
+
 ## Operation
 
-1. Map required behavior, callers, dependencies, state, effects, tests, and accepted constraints.
+1. At `architecture_started`, map required behavior, callers, dependencies, state, effects, tests, and accepted constraints.
 2. Classify each dependency path:
 
 | Path | Rule |
@@ -47,7 +54,7 @@ State the required behavior, chosen module, interface, hidden implementation res
 
 3. Assign cohesive behavior and state ownership. Define small, deep interfaces with operations, inputs, outputs, invariants, ordering, errors, configuration, and performance constraints.
 4. Add a seam only where behavior must vary. Prefer observable outcomes over hidden effects. Use the deletion test: a useful module redistributes meaningful complexity when removed.
-5. For explicit Design-It-Twice work, create independent candidates with distinct constraints, then use the Review and Decision reference for comparison.
+5. For explicit Design-It-Twice work, create independent candidates with distinct constraints, then use the Review and Decision reference for comparison and return at `architecture_returned`.
 
 ## Returns
 

@@ -30,15 +30,23 @@ Positioning locates the relevant discipline, standard, primary record, or applie
 | Missing information is human experience or value | [Grilling](grilling.md) or [Prototype](prototype.md) | Next human question or bounded experience evidence |
 | An eligible Work or Release outcome may add or remove a reusable note | [Review](review.md), then [Decision](decision.md) | Factual disposition before note mutation |
 
+## Checkpoints
+
+| When | Checkpoint | Allows |
+|---|---|---|
+| A controlling fact, source model, or factual path is missing | `research_started` | Existing-note fit check, bounded source work, and knowledge-model construction |
+| Evidence and its limits answer the current factual frontier | `research_returned` | Evidence, model, and next factual frontier to the declared caller |
+| Review and Decision accept a reusable note change | `note_update` | Add or remove only that reusable research note |
+
 ## Operation
 
-1. Check `.dev-skill/research/` first. Reuse a note only when its knowledge points and structure answer the current question.
+1. At `research_started`, check `.dev-skill/research/` first. Reuse a note only when its knowledge points and structure answer the current question.
 2. Define the controlling question, source boundary, and the missing fact or model. Prefer primary sources; ask the human to provide a book, paper, or narrower direction when the required source is unavailable.
 3. Build a knowledge model: terms, relations, constraints, evidence limits, and a Professional Anchor describing what competent practice requires.
 4. Apply Lexical Uplift: use the professional vocabulary needed to search, compare, and name the actual problem without inventing authority.
 5. When the task is under fog, Pathfinding maps the visible frontier: destination, known facts, unknown controlling facts, dependencies, excluded paths, and the next evidence question. It supplies a path, not a decision.
 6. Use the matching Runtime reference when source alternatives create a semantic choice or human experience or value is missing.
-7. Return only the evidence, its limits, the knowledge model, and the next factual frontier to the caller.
+7. At `research_returned`, return only the evidence, its limits, the knowledge model, and the next factual frontier to the caller.
 
 ## Returns
 

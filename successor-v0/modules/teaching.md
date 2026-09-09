@@ -36,14 +36,21 @@ Create locations lazily. Teaching itself remains stateless by default.
 | Mission-relevant source knowledge is missing | [Research](research.md) | Evidence, [Lexical Uplift](research.md), and [Professional Anchor](research.md) for the next teaching step |
 | A durable learning artifact needs rendering | [Write](write.md) | Rendered material at the human-authorized location |
 
+## Checkpoints
+
+| When | Checkpoint | Allows |
+|---|---|---|
+| Mission, learning increment, and demonstration are bound | `teaching_started` | Bounded material, exercise, and observed application |
+| Human judgment or a failed demonstration is available | `learning_returned` | Declared learner, next teaching step, Research, or authorized writer return |
+
 ## Operation
 
-1. Bind the Mission, Learning increment, and Demonstration from the Learning structure.
+1. At `teaching_started`, bind the Mission, Learning increment, and Demonstration from the Learning structure.
 2. Select bounded, trustworthy, mission-relevant material. Use the Research reference when source knowledge, Lexical Uplift, or Professional Anchor is needed.
 3. Separate term recall, point recall, structural understanding, and successful application. Reading or notes do not prove competence.
 4. Give one bounded exercise and observe its application.
 5. On failure, classify the cause—lexical entrance, missing prerequisite, structural misunderstanding, ambiguous question, insufficient practice, or unsuitable processing structure—then repair that cause and require a new demonstration.
-6. The human judges mastery. Keep records stateless unless the human explicitly asks for durable material and names its writer.
+6. The human judges mastery. At `learning_returned`, keep records stateless unless the human explicitly asks for durable material and names its writer.
 
 ## Returns
 

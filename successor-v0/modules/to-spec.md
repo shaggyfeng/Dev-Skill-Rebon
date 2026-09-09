@@ -26,13 +26,20 @@ The caller chooses the project specification location. This module returns a can
 | Requirement meaning is unresolved | [Design](../design.md) | Resolved meaning to the specification |
 | A requirement choice is semantic | [Review](review.md), then [Decision](decision.md) | Findings and semantic disposition to the specification caller |
 
+## Checkpoints
+
+| When | Checkpoint | Allows |
+|---|---|---|
+| Accepted Design and needed architecture results exist | `specification_started` | Candidate requirement contract with seams and consumers |
+| Candidate specification or a stated gap is complete | `specification_returned` | Declared ticket, architecture, Design, or semantic return |
+
 ## Operation
 
-1. Trace each accepted Design result to observable requirements.
+1. At `specification_started`, trace each accepted Design result to observable requirements.
 2. Define inputs, transitions, outputs, failures, recovery, ownership, interfaces, dependencies, authority, and applicable non-functional constraints.
 3. Give every requirement observable acceptance, a verification seam, and a consumer.
 4. Mark inapplicable conditions explicitly. Return unresolved meaning, scope, authority, vocabulary, or empirical questions upstream.
-5. Use the Review and Decision reference for any semantic requirement choice.
+5. Use the Review and Decision reference for any semantic requirement choice, then return the candidate or gap at `specification_returned`.
 
 ## Returns
 

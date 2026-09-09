@@ -10,7 +10,16 @@ Run only when [Write](write.md) selects a Markdown table or Mermaid diagram. It 
 |---|---|---|
 | Write selects a Markdown table or Mermaid diagram | [Write](write.md) | Already-bound structure to render; renderer returns the form to Write |
 
+## Checkpoints
+
+| When | Checkpoint | Allows |
+|---|---|---|
+| Write supplies already-bound repeated fields, mapping, or relationship | `form_rendering` | Table or Mermaid rendering from that supplied structure |
+| Rendered form preserves supplied meaning | `form_returned` | Write receives the table or diagram |
+
 ## Operation
+
+At `form_rendering`, render only the structure Write supplied.
 
 ### Tables
 
@@ -29,4 +38,4 @@ Run only when [Write](write.md) selects a Markdown table or Mermaid diagram. It 
 
 ## Return
 
-Return the rendered table or diagram through the Write reference.
+Return the rendered table or diagram at `form_returned` through the Write reference.

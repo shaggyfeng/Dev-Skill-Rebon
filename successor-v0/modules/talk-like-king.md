@@ -11,9 +11,16 @@ Run when [Write](write.md) routes a non-instructional meeting-style, deep, multi
 | A selected user setting must determine King presentation | [Writing Style Toolbox](writing-style.md) | Selected vocabulary, grammar, rhythm, shape, narration, situation, honesty, description, figurative language, background, affectation, theme, reader, pace, and revision settings |
 | King presentation is complete | [Write](write.md) | Styled bound meaning rendered to its original caller |
 
+## Checkpoints
+
+| When | Checkpoint | Allows |
+|---|---|---|
+| Write routes eligible bound human-facing presentation | `king_started` | King settings applied without added meaning |
+| Styled presentation is complete | `king_returned` | Write returns it to the original caller |
+
 ## Operation
 
-When a selected setting exists, use the Writing Style Toolbox reference without changing bound meaning. The default King settings are:
+At `king_started`, when a selected setting exists, use the Writing Style Toolbox reference without changing bound meaning. The default King settings are:
 
 - Vocabulary: plain conversational words; one exact unusual word only when it earns its place; concrete names, dates, and numbers anchor a scene.
 - Grammar: subject and verb early; simple or compound sentences; longer conversational runs only when they carry momentum.
@@ -31,4 +38,4 @@ Do not add fictional characters, invented dialogue, planted symbolism, or stakes
 
 ## Return
 
-Return the styled presentation through the Write reference.
+Return the styled presentation at `king_returned` through the Write reference.

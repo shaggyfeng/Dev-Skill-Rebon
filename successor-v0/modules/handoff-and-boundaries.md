@@ -26,12 +26,19 @@ The caller chooses a real temporary or approved handoff directory as the transfe
 | Work needs compact sequential-optimized transfer instead of a real boundary handoff | [Context Optimization](context-optimization.md) | Sequential continuation structure in `.dev-skill/context/` |
 | A transferred pointer changes scope or consumer | [Route](../stage-0-route.md) | Re-routed stage and next consumer |
 
+## Checkpoints
+
+| When | Checkpoint | Allows |
+|---|---|---|
+| A real session, harness, directory, colleague, or side-task boundary exists | `handoff_ready` | Transfer the current Handoff layout to that exact boundary |
+| Receiver has the transferred authoritative pointers | `handoff_returned` | Resume the stated consumer or Route re-entry on changed scope or consumer |
+
 ## Operation
 
 1. Confirm that a real boundary exists. Otherwise return to the current family without creating a handoff.
-2. Transfer the Handoff layout.
+2. At `handoff_ready`, transfer the Handoff layout.
 3. Redact secrets and personal data. Point to authoritative artifacts instead of copying their contents.
-4. The receiver reads the transferred pointers and resumes from the stated consumer. A changed scope or consumer uses the Route reference.
+4. The receiver reads the transferred pointers and resumes from the stated consumer at `handoff_returned`. A changed scope or consumer uses the Route reference.
 
 ## Returns
 

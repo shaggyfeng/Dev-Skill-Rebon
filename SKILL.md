@@ -13,9 +13,9 @@ Use only this package for DevSkill runtime instructions. The package contains ru
 ## Entry and load order
 
 1. Read `manifest.json` for the runtime-file set.
-2. When admission is needed, load [Mode Gate](mode-gate.md); it returns an admitted profile or `mode_not_admitted` to [Route](successor-v0/stage-0-route.md).
-3. When admission succeeds, load [Route](successor-v0/stage-0-route.md); it returns one family, overlay, or terminal.
-4. When Route selects a family, load that family and only the modules named by its Runtime calls; each returns to its declared consumer.
+2. When admission is needed, load [Mode Gate](mode-gate.md); it returns an admitted profile and checkpoint-interception capability, or `mode_not_admitted`, to [Route](successor-v0/stage-0-route.md).
+3. When admission succeeds, load [Route](successor-v0/stage-0-route.md); it returns one family, overlay, or terminal and enters the selected owner's first declared checkpoint.
+4. When Route selects a family, load that family and only the modules named by its Runtime calls; each operation returns through its bounded-closure result to its declared consumer.
 5. When findings are needed, load [Review](successor-v0/modules/review.md); it returns findings to the calling operation. When the admitted host is Rebon, load [Rebon host adapter](successor-v0/modules/rebon-host-adapter.md); it returns native results to its declared consumer.
 
 Resolve all paths from this package root. Keep runtime checkpoints internal. State the selected host, mode, subagent use, and context optimization once when admission completes.
@@ -69,6 +69,24 @@ Does an accepted rule uniquely determine this output?
 
 Do not add a module, artifact, verification loop, state wrapper, fallback, or record merely because it appears safer. Retain a rule only when it changes a current read, question, choice, action, return, or human Value Gap.
 
+## Bounded closure
+
+At every module operation or meaningful internal sub-operation return, the caller reuses its current goal, accepted constraints, and declared consumer. A direct request supplies them directly; indirect work uses Decision's Human Intent State.
+
+```text
+bounded obligation closed and next operation uniquely determined
+  -> declared consumer
+otherwise
+  -> factual gap: Research
+  -> experience gap: Prototype or human
+  -> human-owned meaning or priority: Grilling
+  -> frozen semantic candidate: Review -> Decision -> caller or Route
+```
+
+Do not run Decision for a determined mechanical, evidentiary, operational, or presentation step. Do not create a packet, controller, state wrapper, or whole-conversation reread to perform this check.
+
+Each local `## Checkpoints` table is the owning operation's declaration for [Host Enforcement](successor-v0/modules/host-enforcement.md). The table does not create a separate controller, record, or host claim. Route uses `enter` only for the first selected owner. Whenever a local `Allows` result selects a child module, declared return, or state-changing action, its owning caller uses `advance` to that exact next boundary before calling or advancing it. An intercepting host validates the current binding and replaces it with the declared next owner boundary; the callee starts only after that advance. Without interception, the caller follows the same declared transition as `instruction-guided`.
+
 ## Context and review
 
 When an admitted optimized operation needs context-bearing work, load [Context Optimization](successor-v0/modules/context-optimization.md); it returns bounded fragments or a read-free synthesis to that operation. A normal-mode capacity failure returns to [Mode Gate](mode-gate.md) with an optimized mode suggested.
@@ -77,19 +95,19 @@ When an admitted optimized operation needs context-bearing work, load [Context O
 |---|---|
 | Grilling | Main agent: Standards and Specification |
 | Implementation slice | Separate Standards and Specification passes, both focused on runtime logic |
-| Roadmap closure or merge | Standards + Correctness and Specification + Correctness |
+| Plan-declared complete implementation, phase, roadmap, or merge unit governed by accepted Design or final Grilling decisions | Standards + Correctness and Specification + Correctness |
 
-Implementation review is a barrier for one slice. Correct, review again, and verify before a dependent slice starts. Review returns findings only.
+Every implementation slice uses the two-axis barrier regardless of roadmap-checkbox intent. An accepted Design result or final Grilling record and its matching Plan declare the complete closure unit: one complete implementation, one phase, the roadmap, or a merge. A roadmap unit closes every planned phase before the roadmap; a checkbox records a passed unit and never selects review axes. Review returns findings only. Decision checks every record-governed finding or correction before it becomes action, invalidating one that conflicts with accepted rules or does not reduce the stated Value Gap. At a declared closure unit, rerun both three-axis assignments after each correction and report closure only when no finding breaks public behavior, authority, consumer, terminal, or Value Gap.
 
 ## Re-entry
 
-After every module result, silently return to the active family and its [Route](successor-v0/stage-0-route.md) edge. When a stage change, review result, semantic change, host or mode change, failed tool call, or resume occurs, load the current family and the producing and consuming modules; their declared return determines the next consumer. A sequential-optimized continuation also loads [Context Optimization](successor-v0/modules/context-optimization.md) for its continuation structure.
+After bounded closure, silently return to the active family and its [Route](successor-v0/stage-0-route.md) edge. A determined result advances to its declared consumer. A changed stage, review result, semantic change, host or mode change, failed tool call, or resume loads the current family and the producing and consuming modules; their declared return determines the next consumer. A sequential-optimized continuation also loads [Context Optimization](successor-v0/modules/context-optimization.md) for its continuation structure.
 
 Never print internal checkpoints, ledgers, retries, fragments, or worker results.
 
 ## Completion
 
-Advance only when the current operation produced its stated result within its authority and handed it to its stated consumer. A missing prerequisite, unresolved human meaning, or failed operation follows its local return route.
+Advance only when the current operation produced its stated result within its authority, cleared its required review or verification barrier, and handed the result to its stated consumer. A missing prerequisite, unresolved human meaning, or failed operation follows its local return route.
 
 The clean package remains runtime-only. Do not add records, catalogs, generated schemas, evidence bundles, tests, or project controllers as substitutes for instruction.
 

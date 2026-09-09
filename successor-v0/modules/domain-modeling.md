@@ -33,6 +33,15 @@ An ADR lives at `docs/adr/{NNNN}-{slug}.md`, uses the next sequential number, an
 | Design or Plan needs a candidate domain model | [Design](../design.md) or [Plan](../plan.md) | Bound task facts and the candidate model's consumer |
 | A term, rule, ownership, or ADR choice is semantic | [Review](review.md), then [Decision](decision.md) | Findings and accepted disposition before any exact write |
 | Human-owned meaning remains unresolved | [Grilling](grilling.md) | Accepted rule or next question for the candidate model |
+| A compatible host enters or advances a Domain Modeling boundary | [Host Enforcement](host-enforcement.md) | Checkpoint-scoped candidate return or exact write; `instruction-guided` when no interception exists |
+
+## Checkpoints
+
+| When | Checkpoint | Allows |
+|---|---|---|
+| Candidate terms or rules need a semantic disposition | `candidate_returned` | Review then Decision or Grilling return without a durable write |
+| Exact human-accepted content and its applicable location are known | `exact_write` | Scoped glossary, ADR, or final Grilling decision-record write only |
+| Exact durable content is written | `record_returned` | Declared calling lifecycle consumes that unchanged content |
 
 ## Operation
 
@@ -41,9 +50,9 @@ An ADR lives at `docs/adr/{NNNN}-{slug}.md`, uses the next sequential number, an
 3. Identify overloaded, conflicting, undefined, or cross-context terms.
 4. Define each candidate by what it is; identify rejected aliases; bind entities, relations, rules, ownership, lifecycle, and boundaries. Use the glossary format for accepted terms.
 5. Test boundaries with concrete edge conditions. Preserve code, document, and meaning conflicts for human resolution.
-6. Use the Review and Decision reference for a semantic term, rule, ownership, or ADR choice.
-7. After exact human acceptance, write only the accepted canonical terms to the applicable glossary. Create a short ADR only when the trade-off is hard to reverse, surprising without context, and real.
-8. For an accepted Grilling record or publication request, write the exact reviewed content without changing questions, options, findings, answers, or accepted rules.
+6. Use the Review and Decision reference for a semantic term, rule, ownership, or ADR choice; otherwise return the candidate at `candidate_returned`.
+7. At `exact_write`, after exact human acceptance, write only the accepted canonical terms to the applicable glossary. Create a short ADR only when the trade-off is hard to reverse, surprising without context, and real.
+8. For a completed Grilling session, use `exact_write` to write its final decision record without changing its scoped questions, intent baseline, accepted rules, supersession, or next consumers, then return it at `record_returned`.
 
 ## Returns
 
@@ -51,5 +60,5 @@ An ADR lives at `docs/adr/{NNNN}-{slug}.md`, uses the next sequential number, an
 |---|---|
 | Candidate model or domain conflict | [Design](../design.md) or [Plan](../plan.md) |
 | Human-owned meaning | [Grilling](grilling.md) |
-| Accepted glossary, ADR, or exact record write | Calling lifecycle |
+| Accepted glossary, ADR, or final Grilling decision record | Calling lifecycle |
 | Missing context or contradictory ownership | Originating caller |

@@ -23,13 +23,20 @@ The prototype has one question, assumption, success criterion, falsification cri
 | Evidence creates a semantic choice | [Review](review.md), then [Decision](decision.md) | Findings and semantic disposition for the caller |
 | Bounded evidence must answer a human-owned question | [Grilling](grilling.md), [Design](../design.md), or [Plan](../plan.md) | Evidence to the owning question or stage |
 
+## Checkpoints
+
+| When | Checkpoint | Allows |
+|---|---|---|
+| One bounded empirical question and its criteria are known | `experiment_started` | Smallest disposable experiment and stated observation |
+| Criteria produce an observed result | `evidence_returned` | Supported, falsified, or inconclusive evidence to the declared caller |
+
 ## Operation
 
-1. State one falsifiable question, assumption, success, falsification, and inconclusive criteria.
+1. At `experiment_started`, state one falsifiable question, assumption, success, falsification, and inconclusive criteria.
 2. Select the smallest disposable logic or UI experiment that can answer it. Keep one run instruction and all relevant state visible.
 3. For logic, prefer a portable core and thin disposable shell. For UI, compare structurally distinct variants in the existing host surface.
 4. Observe only the cases required by the criteria. Keep observation separate from interpretation.
-5. Return `supported`, `falsified`, or `inconclusive`, plus limitations, reproduction, and affected work.
+5. At `evidence_returned`, return `supported`, `falsified`, or `inconclusive`, plus limitations, reproduction, and affected work.
 6. Use the Review and Decision reference for any choice created by the evidence.
 
 ## Returns

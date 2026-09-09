@@ -9,6 +9,7 @@ Mode Gate alone owns provider and host evidence, suggested mode and host, human 
 | When | Load | Return or use |
 |---|---|---|
 | The selected host is `rebon` and native capability must validate | [Rebon host adapter](successor-v0/modules/rebon-host-adapter.md) | Native capability confirmation for admission or `mode_not_admitted` |
+| A selected host's checkpoint interception capability must be classified | [Host Enforcement](successor-v0/modules/host-enforcement.md) | `checkpoint-capable` or unavailable interception; never a current operation or `enforced` claim |
 | Admission confirms an optimized mode | [Context Optimization](successor-v0/modules/context-optimization.md) | Context-fit operation after admission; it never decides the mode |
 | Admission completes | [Route](successor-v0/stage-0-route.md) | One family, overlay, or Route terminal from the admitted profile |
 | An admitted governance problem changes design meaning, authority, or scope | [Grilling](successor-v0/modules/grilling.md) | Accepted rule or next question under the selected governance profile |
@@ -25,7 +26,7 @@ Use trusted host or session metadata, then the named adapter configuration and d
 
 1. Trust runtime host/session metadata first.
 2. If a field remains unresolved, inspect only the named adapter's documented environment-variable names and host configuration or adapter probe. Do not enumerate arbitrary environment variables or infer locality from a model name, URL shape, or speed.
-3. Normalize evidence into provider kind, host kind, usable subagents, context capacity, workload request, and display support. Record evidence sources and classifications, not secret contents.
+3. Normalize evidence into provider kind, host kind, usable subagents, context capacity, workload request, and display support. Keep only the current sources and classifications; never expose secret contents.
 4. Compile at most one suggested mode and one suggested host with the supporting capability evidence. Conflicting evidence fails closed; do not merge profiles.
 5. Present one evidence-supported host and mode suggestion for human confirmation before mode selection. Governance never bypasses this confirmation.
 6. Missing capability evidence, unresolved provider/session identity, or a conflicting suggestion returns the existing typed unresolved/admission failure. Never invent a suggestion or capability proof.
@@ -42,10 +43,9 @@ A delegated task inherits its parent's admitted host, mode, and relevant task bo
 2. Without a valid inherited profile, read provider metadata and capability evidence before asking for mode, host, or roadmap intent.
 3. Normalize the evidence and compile one suggested host and mode.
 4. Ask the human to confirm the suggestion. If the human declines or evidence is unresolved, ask mode first from the four choices, then host. Do not inspect provider evidence again.
-5. Resolve `roadmap_checkbox_update` after host selection and before implementation; resolve governance only when the user names or accepts roadmap or session-goal continuation.
-6. Derive the review route from the task and roadmap or merge intent.
-7. Validate the selected mode against its applicable provider, host, subagent, planning-tool, structured-output, and handoff capabilities.
-8. Announce the admitted host, provider, mode, subagent use, Context Optimization use, roadmap intent, and review route once. Use the matching Runtime reference after admission.
+5. Resolve `roadmap_checkbox_update` after host selection and before implementation only when the task uses a roadmap checkbox. It records a later checklist update; it does not choose a review route or axis. Resolve governance only when the user names or accepts roadmap or session-goal continuation.
+6. At `admission_evaluated`, validate the selected mode against its applicable provider, host, subagent, planning-tool, structured-output, and handoff capabilities. Use the Host Enforcement reference only to classify available checkpoint interception.
+7. At `admission_returned`, announce the admitted host, provider, mode, subagent use, Context Optimization use, and roadmap intent once. Admission is capability only: it does not begin an operation or authorize a state change. Use the matching Runtime reference after admission.
 
 ## Admission representation
 
@@ -60,6 +60,13 @@ trusted evidence
 ```
 
 No state silently advances. Conflicting evidence, unresolved identity, missing required capability, or an invalid host-mode pairing returns `mode_not_admitted` and asks only for the missing decision.
+
+## Checkpoints
+
+| When | Checkpoint | Allows |
+|---|---|---|
+| Trusted evidence and required human confirmations are available | `admission_evaluated` | Capability validation and one admitted profile or `mode_not_admitted` result |
+| Profile fields and capability validation pass, or a required field fails | `admission_returned` | Route receives the admitted profile or stops at `mode_not_admitted` |
 
 ## Mode selection
 
@@ -103,11 +110,9 @@ An installed command, provider, model, endpoint, or Agent capability does not es
 
 ## Roadmap checkbox
 
-Resolve `roadmap_checkbox_update` as `yes` or `no` before implementation. Ask one question only when the task does not resolve it. `yes` selects implementation/acceptance checklist-close review. `no` selects design or implementation review.
+Resolve `roadmap_checkbox_update` as `yes` or `no` before implementation only when the task uses a roadmap checkbox. Ask one question only when the task does not resolve it. `yes` permits a matching Plan-declared closure unit to update that checkbox after its required review passes. It never selects a review route or axis: every implementation slice uses separate Standards and Specification findings, and only the matching accepted Design result or final Grilling record plus Plan may use three axes. `no` leaves no checkbox update to perform.
 
-Resolve `merge_pr_review` as `yes` or `no` before a merge-PR review. `yes` selects `checklist_close` independently of `roadmap_checkbox_update`.
-
-Resolve `review_route` as `grill`, `implementation_logic`, or `checklist_close` from the Route trigger precedence. An unresolved review route remains non-admitted.
+Resolve `merge_pr_review` as `yes` or `no` before a merge-PR review. `yes` permits its matching Plan-declared merge closure after required review passes; it does not select the review axes.
 
 ## Governance profile
 
@@ -133,7 +138,7 @@ Announce the selected profile once — with the admitted profile when governance
 
 ## Admission result
 
-Admission requires resolved host, provider, mode, capability fit, and review route. It also requires a roadmap answer before implementation and a governance answer only for session or roadmap continuation. `route_status=admitted` is required before repository work.
+Admission requires resolved host, provider, mode, and capability fit. It also requires a roadmap answer only when the task uses a roadmap checkbox and a governance answer only for session or roadmap continuation. Plan selects any later closure unit from the final Grilling record and matching plan. `route_status=admitted` is required before repository work, but it is not a current operation, mutation authority, or generic activation marker.
 
 When the host is Rebon, admission also requires the Rebon adapter to confirm the selected native tool path.
 

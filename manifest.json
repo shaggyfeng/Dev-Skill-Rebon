@@ -1,7 +1,7 @@
 {
   "schema": "devskill.clean-runtime-manifest.v1",
   "status": "active",
-  "version": "2.0.1",
+  "version": "2.2.0",
   "entrypoint": "SKILL.md",
   "runtime_files": [
     "SKILL.md",
@@ -13,6 +13,7 @@
     "successor-v0/work.md",
     "successor-v0/release.md",
     "successor-v0/modules/rebon-host-adapter.md",
+    "successor-v0/modules/host-enforcement.md",
     "successor-v0/modules/write.md",
     "successor-v0/modules/writing-style.md",
     "successor-v0/modules/markdown-tables-and-diagrams.md",

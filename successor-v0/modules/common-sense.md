@@ -25,6 +25,14 @@ Each complete pair is one separate two-column table in that fixed row order. Its
 | A compact matched reference reaches a semantic choice | [Semantic-choice test](../../SKILL.md) | Mechanical or evidentiary result, or a Decision call, applied by the caller; Common Sense still returns only the reference |
 | An eligible Work or Release outcome may update the table | [Review](review.md), then [Decision](decision.md) | Findings and accepted disposition before Common Sense writes the pair |
 
+## Checkpoints
+
+| When | Checkpoint | Allows |
+|---|---|---|
+| A project table is absent or a current operation names a pattern | `cue_scan` | Native-table initialization when absent, or targeted cue-row reading |
+| An exact Subject becomes a candidate | `pair_read` | Read that complete pair and return no reference or one compact reference |
+| Review and Decision accept a reusable pair update | `pair_update` | Write only that accepted pair and refresh its cue rows |
+
 ## Operation
 
 ```text
@@ -36,15 +44,15 @@ caller
   -> caller applies the semantic-choice test
 ```
 
-1. Initialize the project's `.dev-skill/common-sense.md` from the native table only when absent.
-2. Use targeted search to read cue rows, not the complete table.
-3. Read a complete pair only after its exact Subject becomes a candidate.
+1. At `cue_scan`, initialize the project's `.dev-skill/common-sense.md` from the native table only when absent.
+2. At `cue_scan`, use targeted search to read cue rows, not the complete table.
+3. At `pair_read`, read a complete pair only after its exact Subject becomes a candidate.
 4. A matching success cancels a failure only when the pair declares that exact same subject and condition. Otherwise retain both references.
 5. A missing or unreadable table returns no reference and ordinary work continues.
 
 ## Updates
 
-Eligible Work or Release outcomes may draft one complete reusable failure and success pair. Review supplies findings; Decision selects the disposition; Common Sense makes only the accepted update and refreshes its cue rows. It does not invent new pairs during ordinary work.
+Eligible Work or Release outcomes may draft one complete reusable failure and success pair. Review supplies findings; Decision selects the disposition; at `pair_update`, Common Sense makes only the accepted update and refreshes its cue rows. It does not invent new pairs during ordinary work.
 
 ## Returns
 

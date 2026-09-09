@@ -31,13 +31,20 @@ Run when Write receives an explicit user setting, sample, or long-form creative,
 | Write receives an explicit setting, sample, or long-form creative work | [Write](write.md) | Bound meaning and form; Writing Style returns selected settings to Write |
 | A King setting is selected | [Talk Like King](talk-like-king.md) | Styled presentation to Write without changed meaning |
 
+## Checkpoints
+
+| When | Checkpoint | Allows |
+|---|---|---|
+| Write supplies an explicit setting, sample, or long-form creative request | `style_selected` | Reusable presentation settings or a King route |
+| Setting, missing detail, or human preference is known | `style_returned` | Declared Write, Talk Like King, or human consumer |
+
 ## Operation
 
-1. Use an explicit user-supplied style, sample, or plain-language preference when one exists. Keep only its reusable settings; never copy its content or claims. Use the Talk Like King reference for an explicit King choice; return another setting to Write.
+1. At `style_selected`, use an explicit user-supplied style, sample, or plain-language preference when one exists. Keep only its reusable settings; never copy its content or claims. Use the Talk Like King reference for an explicit King choice; return another setting to Write.
 2. For long-form creative work without a preference, ask once whether to use the Talk Like King reference or a supplied setting or sample. `lead_ungoverned` never reaches this question: Write routes it directly to Talk Like King.
 3. For an unfamiliar named style, ask for a short description or sample instead of inventing its settings.
 4. Express a selected setting through the Toolbox. Keep each selected value tied to the bound reader, form, and meaning.
-5. Keep the setting for the current conversation. Do not create a durable style record unless the human asks for one.
+5. At `style_returned`, keep the setting for the current conversation. Do not create a durable style record unless the human asks for one.
 
 ## Return
 

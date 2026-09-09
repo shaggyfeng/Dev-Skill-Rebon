@@ -15,14 +15,24 @@ Use the current schema discovered through `ToolSearch`. Each card must state its
 | Rebon host admission or its native profile is unresolved | [Mode Gate](../../mode-gate.md) | Admitted Rebon profile or `mode_not_admitted` |
 | A Rebon card needs bounded source material | [Context Optimization](context-optimization.md) | Bounded fragments for the card; non-reading cards consume those fragments |
 | A Rebon result needs findings | [Review](review.md) | Findings to the calling family; Workflow state never substitutes for them |
+| A Rebon-native capability can map an exact declared checkpoint | [Host Enforcement](host-enforcement.md) | Capability-scoped native mapping or `instruction-guided`; no new Rebon schema or authority |
+
+## Checkpoints
+
+| When | Checkpoint | Allows |
+|---|---|---|
+| Rebon operation needs an unknown native tool, selector, schema, or display capability | `native_profile_ready` | ToolSearch and the matching bounded native operation |
+| Native task, Workflow, or structured result reaches its declared consumer | `native_result_returned` | Calling family or module consumes that result without treating native state as authority |
 
 ## Operation
 
-1. Use `ToolSearch` before a Rebon operation whose current tool, selector, schema, or display capability is unknown.
-2. Use `TaskCreate`, `TaskGet`, `TaskList`, and `TaskUpdate` for every admitted Rebon operation. Create task entries for explicit plan units; otherwise create one for the operation. Update them as the current situation changes. Task state is a waypoint, never DevSkill authority or completion.
-3. In both parallel modes, use `Workflow` as the outer dispatcher. Keep `parallel()`, `pipeline()`, `agent()`, Workflow scripts, escalation tools, and selected native display inside the Workflow.
-4. In sequential modes, use the sequential runner. Never call `agent()` or `parallel()`.
-5. Use `EnterPlanMode`, plan tools, `PlanLedger`, and `ExitPlanMode` whenever the selected Rebon mode and task call for planning or escalation.
+1. At `native_profile_ready`, use `ToolSearch` before a Rebon operation whose current tool, selector, schema, or display capability is unknown.
+2. Use the Host Enforcement reference only to map a native capability to an active declared checkpoint. Do not report `enforced` without that exact native interception.
+3. Use `TaskCreate`, `TaskGet`, `TaskList`, and `TaskUpdate` for every admitted Rebon operation. Create task entries for explicit plan units; otherwise create one for the operation. Update them as the current situation changes. Task state is a waypoint, never DevSkill authority or completion.
+4. In both parallel modes, use `Workflow` as the outer dispatcher. Keep `parallel()`, `pipeline()`, `agent()`, Workflow scripts, escalation tools, and selected native display inside the Workflow.
+5. In sequential modes, use the sequential runner. Never call `agent()` or `parallel()`.
+6. Use `EnterPlanMode`, plan tools, `PlanLedger`, and `ExitPlanMode` whenever the selected Rebon mode and task call for planning or escalation.
+7. Return each declared native task, Workflow, or structured result at `native_result_returned` to its calling family or module.
 
 ## Parallel role binding
 

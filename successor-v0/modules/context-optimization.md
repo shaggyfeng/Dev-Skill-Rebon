@@ -22,12 +22,19 @@ Context Optimization owns fit assessment, partitioning, bounded fragments, read-
 |---|---|---|
 | A normal-mode operation cannot fit its context | [Mode Gate](../../mode-gate.md) | Re-admitted profile with an optimized mode suggested |
 
+## Checkpoints
+
+| When | Checkpoint | Allows |
+|---|---|---|
+| A task-specific context-bearing target is selected | `target_sized` | Fit decision or authoritative partition before content reading, reasoning, writing, review, verification, or continuation |
+| Bounded units are read or produced | `fragments_ready` | Read-free synthesis to the declared consumer or sequential continuation |
+
 ## Operation
 
-1. Before content work, use native listing, targeted search, metadata, byte counts, and line counts to size the target.
+1. At `target_sized`, before content work, use native listing, targeted search, metadata, byte counts, and line counts to size the target.
 2. If fit is uncertain or the target is oversized, partition it before reading at a file, section, symbol, source/test, roadmap outcome, or other authoritative seam.
 3. Read one bounded unit at a time. Preserve only the compact fragment needed by the next consumer, including omissions and remaining frontier.
-4. Synthesize from bounded fragments without rereading the full source.
+4. At `fragments_ready`, synthesize from bounded fragments without rereading the full source.
 5. Apply the same sequence to reading, reasoning, writing, review, verification, and continuation when their target would exceed context.
 
 ## Mode behavior

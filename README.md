@@ -1,4 +1,4 @@
-# DevSkill Unslop 2.0.1
+# DevSkill Unslop 2.2.0
 
 > AI can write code faster than you can regret the architecture.
 >
@@ -10,13 +10,14 @@ DevSkill Unslop turns an AI agent from a prompt-driven helper into a developer w
 
 - **Professional workflows** — design through release
 - **Automatic routing** — no remembered prompts
+- **Closure by design** — review grows only for complete planned outcomes
 - **Less defensive slop** — work must move value
 
 ## Lineage
 
 DevSkill Unslop builds on Matt Pocock’s [Skills for Real Engineers](https://github.com/mattpocock/skills).
 
-Matt’s project brought real engineering methods into agent work. This release rebuilds their runtime topology around stage families with more developed modules, explicit module contracts, automatic routing, durable re-entry, and a stricter answer to AI slop.
+Matt’s project brought real engineering methods into agent work. This release rebuilds their runtime topology around stage families with more developed modules, explicit module contracts, automatic routing, durable re-entry, and a stricter answer to AI slop. Version 2.2.0 makes review scope follow accepted design and the plan—not a checkbox.
 
 ## A complete development route
 
@@ -84,6 +85,8 @@ flowchart TB
 ```
 
 This makes the skill usable without ritual prompts such as “now review,” “now research,” or “use TDD.” A direct request stays direct. An indirect engineering concern reaches Decision first, so the next step reflects the human goal instead of a guessed workflow.
+
+Every implementation slice receives Standards and Specification review. When accepted Design or final Grill decisions and the plan define one complete implementation, phase, roadmap, or merge outcome, that outcome receives the three-axis closure review. A checklist records the passed result; it does not choose the review.
 
 ## It refuses defensive busywork
 

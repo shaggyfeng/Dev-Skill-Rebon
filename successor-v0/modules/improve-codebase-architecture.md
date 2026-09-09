@@ -26,13 +26,20 @@ Run for brownfield architecture survey or insufficient architecture evidence. A 
 | A human-facing report is needed | [Write](write.md) | Rendered survey without changed findings |
 | Evidence remains missing | [Research](research.md) | Evidence to extend the survey |
 
+## Checkpoints
+
+| When | Checkpoint | Allows |
+|---|---|---|
+| Brownfield architecture evidence is needed | `survey_started` | Bounded survey of the named area and evidence-backed candidates |
+| Survey has a candidate, gap, or accepted conflict | `survey_returned` | Declared Codebase Design, Plan, Design, Research, or semantic return |
+
 ## Operation
 
-1. Map modules, interfaces, callers, dependencies, state, effects, tests, accepted decisions, domain terms, and ADRs.
+1. At `survey_started`, map modules, interfaces, callers, dependencies, state, effects, tests, accepted decisions, domain terms, and ADRs.
 2. Identify shallow pass-throughs, leaked invariants, scattered state, duplicated behavior, dependency-direction problems, weak seams, and deletion-test failures.
 3. Form evidence-backed candidates using the Codebase Design vocabulary reference.
 4. Use the Review and Decision reference for any candidate comparison, prioritization, or selected refactor.
-5. Return the Survey structure through the Codebase Design or Plan reference. Use the Write reference when a human-facing report is needed.
+5. At `survey_returned`, return the Survey structure through the Codebase Design or Plan reference. Use the Write reference when a human-facing report is needed.
 
 ## Returns
 

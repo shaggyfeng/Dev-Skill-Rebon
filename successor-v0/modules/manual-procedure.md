@@ -24,14 +24,21 @@ The procedure is temporary. It has no durable location unless the caller names a
 | A procedure needs human-facing presentation | [Write](write.md) | Rendered ordered procedure without changed actions |
 | A real transfer boundary receives the human result | [Handoff](handoff-and-boundaries.md) | Transferred result to its named consumer |
 
+## Checkpoints
+
+| When | Checkpoint | Allows |
+|---|---|---|
+| Requested action is genuinely human-only or unavailable to the host | `procedure_ready` | Complete ordered temporary procedure presentation |
+| Human supplies the stated result | `human_result_returned` | Named caller or Handoff consumer receives that result |
+
 ## Operation
 
 1. Confirm the action cannot be safely performed by the admitted host or a local tool.
 2. Define each stage with the Procedure structure.
-3. Present the complete ordered stages before detailed instructions. Obtain explicit human confirmation before an irreversible action or external account change.
+3. At `procedure_ready`, present the complete ordered stages before detailed instructions. Obtain explicit human confirmation before an irreversible action or external account change.
 4. Verify unknown third-party paths, commands, and destinations from primary documentation. Do not guess them.
 5. Keep secrets out of instructions, logs, reports, handoffs, and durable records.
-6. Use the Write reference to present the procedure. Return the human's result through the named caller or the Handoff reference.
+6. Use the Write reference to present the procedure. Return the human's result at `human_result_returned` through the named caller or the Handoff reference.
 
 ## Returns
 
