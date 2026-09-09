@@ -10,14 +10,13 @@ DevSkill Unslop turns an AI agent from a prompt-driven helper into a developer w
 
 - **Professional workflows** — design through release
 - **Automatic routing** — no remembered prompts
-- **Closure by design** — review grows only for complete planned outcomes
 - **Less defensive slop** — work must move value
 
 ## Lineage
 
 DevSkill Unslop builds on Matt Pocock’s [Skills for Real Engineers](https://github.com/mattpocock/skills).
 
-Matt’s project brought real engineering methods into agent work. This release rebuilds their runtime topology around stage families with more developed modules, explicit module contracts, automatic routing, durable re-entry, and a stricter answer to AI slop. Version 2.2.0 makes review scope follow accepted design and the plan—not a checkbox.
+Matt’s project brought real engineering methods into agent work. This release rebuilds their runtime topology around stage families with more developed modules, explicit module contracts, automatic routing, durable re-entry, and a stricter answer to AI slop.
 
 ## A complete development route
 
@@ -38,6 +37,7 @@ flowchart TB
 | Family or overlay | Module or sub-operation | Job |
 |---|---|---|
 | Admission | Mode Gate | Confirm host, mode, and capability fit |
+| Runtime | Host Enforcement | Enter and advance declared operation checkpoints when the host can intercept them |
 | Route | Route | Select one current consumer |
 | Route | Project Discovery | Establish greenfield, brownfield, or uncertain facts |
 | Route | Common Sense — Vibe and Attention | Retrieve a relevant pattern reference |
